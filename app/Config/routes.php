@@ -119,18 +119,65 @@ $router->get('/relatorios/usuarios', 'RelatorioController', 'usuarios')
 $router->get('/relatorios/usuarios/pdf', 'RelatorioController', 'usuariosPdf')
     ->middleware(AuthMiddleware::class);
 
-// API Routes (JSON)
-$router->get('/api/usuarios', 'Api\\UsuarioController', 'index')
-    ->middleware(AuthMiddleware::class);
+// ========================================
+// API ROUTES (REST API)
+// ========================================
 
-$router->post('/api/usuarios', 'Api\\UsuarioController', 'store')
-    ->middleware(AuthMiddleware::class);
+use App\Middleware\ApiAuthMiddleware;
 
-$router->get('/api/usuarios/{id}', 'Api\\UsuarioController', 'show')
-    ->middleware(AuthMiddleware::class);
+// API Authentication (public routes)
+$router->post('/api/auth/login', 'Api\\AuthApiController', 'login');
+$router->post('/api/auth/refresh', 'Api\\AuthApiController', 'refresh');
+$router->post('/api/auth/logout', 'Api\\AuthApiController', 'logout')
+    ->middleware(ApiAuthMiddleware::class);
+$router->get('/api/auth/me', 'Api\\AuthApiController', 'me')
+    ->middleware(ApiAuthMiddleware::class);
 
-$router->post('/api/usuarios/{id}', 'Api\\UsuarioController', 'update')
-    ->middleware(AuthMiddleware::class);
+// API Users
+$router->get('/api/users', 'Api\\UserApiController', 'index')
+    ->middleware(ApiAuthMiddleware::class);
+$router->post('/api/users', 'Api\\UserApiController', 'store')
+    ->middleware(ApiAuthMiddleware::class);
+$router->get('/api/users/{id}', 'Api\\UserApiController', 'show')
+    ->middleware(ApiAuthMiddleware::class);
+$router->put('/api/users/{id}', 'Api\\UserApiController', 'update')
+    ->middleware(ApiAuthMiddleware::class);
+$router->delete('/api/users/{id}', 'Api\\UserApiController', 'destroy')
+    ->middleware(ApiAuthMiddleware::class);
 
-$router->post('/api/usuarios/{id}/delete', 'Api\\UsuarioController', 'delete')
-    ->middleware(AuthMiddleware::class);
+// API School Subjects
+$router->get('/api/subjects', 'Api\\SchoolSubjectApiController', 'index')
+    ->middleware(ApiAuthMiddleware::class);
+$router->post('/api/subjects', 'Api\\SchoolSubjectApiController', 'store')
+    ->middleware(ApiAuthMiddleware::class);
+$router->get('/api/subjects/{id}', 'Api\\SchoolSubjectApiController', 'show')
+    ->middleware(ApiAuthMiddleware::class);
+$router->put('/api/subjects/{id}', 'Api\\SchoolSubjectApiController', 'update')
+    ->middleware(ApiAuthMiddleware::class);
+$router->delete('/api/subjects/{id}', 'Api\\SchoolSubjectApiController', 'destroy')
+    ->middleware(ApiAuthMiddleware::class);
+
+// API School Teams
+$router->get('/api/teams', 'Api\\SchoolTeamApiController', 'index')
+    ->middleware(ApiAuthMiddleware::class);
+$router->post('/api/teams', 'Api\\SchoolTeamApiController', 'store')
+    ->middleware(ApiAuthMiddleware::class);
+$router->get('/api/teams/{id}', 'Api\\SchoolTeamApiController', 'show')
+    ->middleware(ApiAuthMiddleware::class);
+$router->put('/api/teams/{id}', 'Api\\SchoolTeamApiController', 'update')
+    ->middleware(ApiAuthMiddleware::class);
+$router->delete('/api/teams/{id}', 'Api\\SchoolTeamApiController', 'destroy')
+    ->middleware(ApiAuthMiddleware::class);
+$router->post('/api/teams/{id}/public-link', 'Api\\SchoolTeamApiController', 'togglePublicLink')
+    ->middleware(ApiAuthMiddleware::class);
+$router->get('/api/teams/{id}/schedules', 'Api\\SchoolTeamApiController', 'schedules')
+    ->middleware(ApiAuthMiddleware::class);
+
+// API System Info
+$router->get('/api/version', 'AboutController', 'apiVersion');
+$router->get('/api/docs', 'Api\\DocsApiController', 'swagger');
+$router->get('/api/docs/openapi.json', 'Api\\DocsApiController', 'openapi');
+$router->get('/api/info', 'Api\\DocsApiController', 'info');
+$router->options('/api/{path:.*}', function() {
+    \App\Core\ApiResponse::options();
+});

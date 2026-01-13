@@ -10,10 +10,141 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Planejado
 - Sistema de permissões granulares
 - Dashboard com widgets personalizáveis
-- API REST completa
 - Sistema de notificações em tempo real
 - Integração com storage em nuvem
 - Auditoria completa de ações
+
+---
+
+## [1.3.0] - 2025-01-13
+
+### 🚀 API REST Completa - Nível Empresarial
+
+#### ✨ Adicionado
+- **Sistema de Autenticação JWT**
+  - Autenticação via JSON Web Tokens
+  - Access tokens com expiração configurável (1 hora)
+  - Refresh tokens para renovação (7 dias)
+  - Middleware de autenticação específico para API
+  - Logout com invalidação de tokens
+
+- **Controllers da API REST**
+  - `AuthApiController` - Login, refresh, logout, informações do usuário
+  - `UserApiController` - CRUD completo de usuários
+  - `SchoolSubjectApiController` - Gestão de matérias escolares
+  - `SchoolTeamApiController` - Gestão de turmas e horários
+  - `DocsApiController` - Documentação automática da API
+
+- **Recursos Avançados da API**
+  - Paginação automática com metadados
+  - Filtros e busca em endpoints
+  - Validação robusta de entrada
+  - Sanitização automática de dados
+  - Rate limiting específico para API
+  - Respostas padronizadas (ApiResponse)
+
+- **Segurança da API**
+  - Detecção de SQL Injection e XSS
+  - Headers de segurança automáticos
+  - CORS configurável
+  - Rate limiting por IP e endpoint
+  - Logs de auditoria para todas as operações
+  - Validação de Content-Type
+
+- **Documentação Automática**
+  - Especificação OpenAPI 3.0 completa
+  - Interface Swagger UI integrada
+  - Documentação de todos os endpoints
+  - Exemplos de requisições e respostas
+  - Schemas de dados detalhados
+
+- **Ferramentas de Teste**
+  - Script CLI para testes da API
+  - Bateria de testes automatizada
+  - Exemplos de uso para cada endpoint
+  - Validação de respostas JSON
+
+#### 🔧 Endpoints Implementados
+
+**Autenticação**
+- `POST /api/auth/login` - Login com username/password
+- `POST /api/auth/refresh` - Renovação de token
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/me` - Dados do usuário autenticado
+
+**Usuários**
+- `GET /api/users` - Lista usuários (paginado, filtros)
+- `POST /api/users` - Cria novo usuário
+- `GET /api/users/{id}` - Dados de usuário específico
+- `PUT /api/users/{id}` - Atualiza usuário
+- `DELETE /api/users/{id}` - Remove usuário (soft delete)
+
+**Matérias Escolares**
+- `GET /api/subjects` - Lista matérias (paginado, filtros)
+- `POST /api/subjects` - Cria nova matéria
+- `GET /api/subjects/{id}` - Dados de matéria específica
+- `PUT /api/subjects/{id}` - Atualiza matéria
+- `DELETE /api/subjects/{id}` - Remove matéria
+
+**Turmas Escolares**
+- `GET /api/teams` - Lista turmas (paginado, filtros)
+- `POST /api/teams` - Cria nova turma
+- `GET /api/teams/{id}` - Dados de turma específica
+- `PUT /api/teams/{id}` - Atualiza turma
+- `DELETE /api/teams/{id}` - Remove turma
+- `POST /api/teams/{id}/public-link` - Ativa/desativa link público
+- `GET /api/teams/{id}/schedules` - Horários da turma
+
+**Sistema**
+- `GET /api/info` - Informações gerais da API
+- `GET /api/version` - Versão do sistema
+- `GET /api/docs` - Documentação Swagger UI
+- `GET /api/docs/openapi.json` - Especificação OpenAPI
+- `OPTIONS /api/*` - Suporte CORS
+
+#### 🛡️ Recursos de Segurança
+- **JWT Security**: Tokens assinados com chave secreta
+- **Rate Limiting**: 100 requisições por hora por IP
+- **Input Validation**: Validação rigorosa de todos os dados
+- **SQL Injection Protection**: Detecção automática de padrões
+- **XSS Protection**: Sanitização de entrada e saída
+- **CORS**: Configuração flexível de origens permitidas
+- **Audit Logging**: Log de todas as operações da API
+
+#### 📊 Recursos de Paginação
+- Paginação automática com limite de 100 itens por página
+- Metadados de paginação (total, páginas, navegação)
+- Filtros por campos específicos
+- Busca textual em campos relevantes
+- Ordenação configurável
+
+#### 🔧 Configuração
+- Variáveis de ambiente para JWT
+- Configuração CORS flexível
+- Rate limiting configurável
+- Documentação habilitável/desabilitável
+- Logs de API separados
+
+#### 📚 Documentação
+- Especificação OpenAPI 3.0 completa
+- Interface Swagger UI responsiva
+- Exemplos de código para cada endpoint
+- Schemas de dados detalhados
+- Códigos de erro padronizados
+
+#### 🧪 Testes
+- Script CLI para testes (`cli/api-test.php`)
+- Bateria de testes automatizada
+- Testes de autenticação e autorização
+- Validação de respostas JSON
+- Testes de rate limiting
+
+#### ⚡ Performance
+- Respostas JSON otimizadas
+- Paginação eficiente
+- Queries otimizadas com índices
+- Cache de documentação
+- Headers de cache apropriados
 
 ---
 
