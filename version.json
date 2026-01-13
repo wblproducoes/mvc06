@@ -1,8 +1,8 @@
 {
-    "version": "1.5.0",
-    "build": "20250113005",
+    "version": "1.6.0",
+    "build": "20250113006",
     "release_date": "2025-01-13",
-    "codename": "Smart Installation",
+    "codename": "Dark Mode",
     "php_min": "8.4.0",
     "stability": "stable",
     "features": [
@@ -12,8 +12,9 @@
         "Segurança Empresarial",
         "API REST Completa",
         "Sistema de Logs Avançado",
-        "Instalação Inteligente"
+        "Instalação Inteligente",
+        "Modo Escuro Completo"
     ],
     "changelog_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.5.0"
+    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.6.0"
 }

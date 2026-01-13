@@ -1,0 +1,499 @@
+/**
+ * Dark Mode Styles - Sistema Administrativo MVC
+ * Modo escuro completo e consistente
+ */
+
+/* ========================================
+   VARIÁVEIS CSS PARA TEMAS
+======================================== */
+:root {
+  /* Tema Claro (padrão) */
+  --bs-body-bg: #ffffff;
+  --bs-body-color: #212529;
+  --bs-emphasis-color: #000000;
+  --bs-secondary-color: #6c757d;
+  --bs-tertiary-color: #dee2e6;
+  
+  /* Cards e Containers */
+  --bs-card-bg: #ffffff;
+  --bs-card-border-color: #dee2e6;
+  --bs-border-color: #dee2e6;
+  
+  /* Sidebar */
+  --sidebar-bg: #343a40;
+  --sidebar-color: #ffffff;
+  --sidebar-hover-bg: #495057;
+  --sidebar-active-bg: #007bff;
+  
+  /* Navbar */
+  --navbar-bg: #ffffff;
+  --navbar-color: #212529;
+  --navbar-border: #dee2e6;
+  
+  /* Forms */
+  --bs-form-control-bg: #ffffff;
+  --bs-form-control-color: #212529;
+  --bs-form-control-border-color: #ced4da;
+  
+  /* Tables */
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: #f8f9fa;
+  --bs-table-hover-bg: #f5f5f5;
+  --bs-table-border-color: #dee2e6;
+  
+  /* Buttons */
+  --bs-btn-bg: #ffffff;
+  --bs-btn-border-color: #ced4da;
+  --bs-btn-color: #212529;
+  
+  /* Modals */
+  --bs-modal-bg: #ffffff;
+  --bs-modal-header-border-color: #dee2e6;
+  --bs-modal-footer-border-color: #dee2e6;
+  
+  /* Dropdowns */
+  --bs-dropdown-bg: #ffffff;
+  --bs-dropdown-border-color: #dee2e6;
+  --bs-dropdown-link-color: #212529;
+  --bs-dropdown-link-hover-bg: #f8f9fa;
+  
+  /* Alerts */
+  --bs-alert-bg: #f8f9fa;
+  --bs-alert-border-color: #dee2e6;
+  --bs-alert-color: #212529;
+}
+
+/* ========================================
+   TEMA ESCURO
+======================================== */
+[data-bs-theme="dark"],
+.theme-dark {
+  /* Cores base */
+  --bs-body-bg: #0d1117;
+  --bs-body-color: #e6edf3;
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: #7d8590;
+  --bs-tertiary-color: #30363d;
+  
+  /* Cards e Containers */
+  --bs-card-bg: #161b22;
+  --bs-card-border-color: #30363d;
+  --bs-border-color: #30363d;
+  
+  /* Sidebar */
+  --sidebar-bg: #0d1117;
+  --sidebar-color: #e6edf3;
+  --sidebar-hover-bg: #21262d;
+  --sidebar-active-bg: #1f6feb;
+  
+  /* Navbar */
+  --navbar-bg: #161b22;
+  --navbar-color: #e6edf3;
+  --navbar-border: #30363d;
+  
+  /* Forms */
+  --bs-form-control-bg: #0d1117;
+  --bs-form-control-color: #e6edf3;
+  --bs-form-control-border-color: #30363d;
+  
+  /* Tables */
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: #161b22;
+  --bs-table-hover-bg: #21262d;
+  --bs-table-border-color: #30363d;
+  
+  /* Buttons */
+  --bs-btn-bg: #21262d;
+  --bs-btn-border-color: #30363d;
+  --bs-btn-color: #e6edf3;
+  
+  /* Modals */
+  --bs-modal-bg: #161b22;
+  --bs-modal-header-border-color: #30363d;
+  --bs-modal-footer-border-color: #30363d;
+  
+  /* Dropdowns */
+  --bs-dropdown-bg: #161b22;
+  --bs-dropdown-border-color: #30363d;
+  --bs-dropdown-link-color: #e6edf3;
+  --bs-dropdown-link-hover-bg: #21262d;
+  
+  /* Alerts */
+  --bs-alert-bg: #161b22;
+  --bs-alert-border-color: #30363d;
+  --bs-alert-color: #e6edf3;
+}
+
+/* ========================================
+   APLICAÇÃO DAS VARIÁVEIS
+======================================== */
+
+/* Body e elementos base */
+body {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards */
+.card {
+  background-color: var(--bs-card-bg) !important;
+  border-color: var(--bs-card-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.card-header {
+  background-color: var(--bs-card-bg) !important;
+  border-bottom-color: var(--bs-card-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.card-footer {
+  background-color: var(--bs-card-bg) !important;
+  border-top-color: var(--bs-card-border-color) !important;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--navbar-border) !important;
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: var(--navbar-color) !important;
+}
+
+.navbar-toggler {
+  border-color: var(--bs-border-color) !important;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--sidebar-bg) !important;
+  color: var(--sidebar-color) !important;
+}
+
+.sidebar .nav-link {
+  color: var(--sidebar-color) !important;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--sidebar-hover-bg) !important;
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--sidebar-active-bg) !important;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+  background-color: var(--bs-form-control-bg) !important;
+  border-color: var(--bs-form-control-border-color) !important;
+  color: var(--bs-form-control-color) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bs-form-control-bg) !important;
+  border-color: #1f6feb !important;
+  color: var(--bs-form-control-color) !important;
+  box-shadow: 0 0 0 0.25rem rgba(31, 111, 235, 0.25) !important;
+}
+
+.form-floating > label {
+  color: var(--bs-secondary-color) !important;
+}
+
+.input-group-text {
+  background-color: var(--bs-form-control-bg) !important;
+  border-color: var(--bs-form-control-border-color) !important;
+  color: var(--bs-form-control-color) !important;
+}
+
+/* Tables */
+.table {
+  --bs-table-bg: var(--bs-table-bg);
+  --bs-table-striped-bg: var(--bs-table-striped-bg);
+  --bs-table-hover-bg: var(--bs-table-hover-bg);
+  --bs-table-border-color: var(--bs-table-border-color);
+  color: var(--bs-body-color) !important;
+}
+
+.table th,
+.table td {
+  border-color: var(--bs-table-border-color) !important;
+}
+
+/* Buttons */
+.btn-outline-secondary {
+  color: var(--bs-btn-color) !important;
+  border-color: var(--bs-btn-border-color) !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--bs-btn-bg) !important;
+  border-color: var(--bs-btn-border-color) !important;
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--bs-modal-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.modal-header {
+  border-bottom-color: var(--bs-modal-header-border-color) !important;
+}
+
+.modal-footer {
+  border-top-color: var(--bs-modal-footer-border-color) !important;
+}
+
+.modal-header .btn-close {
+  filter: var(--bs-btn-close-white-filter, none);
+}
+
+/* Dropdowns */
+.dropdown-menu {
+  background-color: var(--bs-dropdown-bg) !important;
+  border-color: var(--bs-dropdown-border-color) !important;
+}
+
+.dropdown-item {
+  color: var(--bs-dropdown-link-color) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--bs-dropdown-link-hover-bg) !important;
+  color: var(--bs-dropdown-link-color) !important;
+}
+
+.dropdown-divider {
+  border-top-color: var(--bs-dropdown-border-color) !important;
+}
+
+/* Alerts */
+.alert {
+  background-color: var(--bs-alert-bg) !important;
+  border-color: var(--bs-alert-border-color) !important;
+  color: var(--bs-alert-color) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  background-color: var(--bs-card-bg) !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--bs-secondary-color) !important;
+}
+
+/* Pagination */
+.page-link {
+  background-color: var(--bs-card-bg) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.page-link:hover {
+  background-color: var(--bs-tertiary-color) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.page-item.active .page-link {
+  background-color: #1f6feb !important;
+  border-color: #1f6feb !important;
+}
+
+/* Progress bars */
+.progress {
+  background-color: var(--bs-tertiary-color) !important;
+}
+
+/* List groups */
+.list-group-item {
+  background-color: var(--bs-card-bg) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.list-group-item:hover {
+  background-color: var(--bs-tertiary-color) !important;
+}
+
+/* Borders */
+.border,
+.border-top,
+.border-end,
+.border-bottom,
+.border-start {
+  border-color: var(--bs-border-color) !important;
+}
+
+/* Text colors */
+.text-muted {
+  color: var(--bs-secondary-color) !important;
+}
+
+/* ========================================
+   TEMA AUTOMÁTICO (SYSTEM PREFERENCE)
+======================================== */
+.theme-auto {
+  /* Usa preferência do sistema */
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-auto {
+    --bs-body-bg: #0d1117;
+    --bs-body-color: #e6edf3;
+    --bs-emphasis-color: #ffffff;
+    --bs-secondary-color: #7d8590;
+    --bs-tertiary-color: #30363d;
+    --bs-card-bg: #161b22;
+    --bs-card-border-color: #30363d;
+    --bs-border-color: #30363d;
+    --sidebar-bg: #0d1117;
+    --sidebar-color: #e6edf3;
+    --sidebar-hover-bg: #21262d;
+    --sidebar-active-bg: #1f6feb;
+    --navbar-bg: #161b22;
+    --navbar-color: #e6edf3;
+    --navbar-border: #30363d;
+    --bs-form-control-bg: #0d1117;
+    --bs-form-control-color: #e6edf3;
+    --bs-form-control-border-color: #30363d;
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #161b22;
+    --bs-table-hover-bg: #21262d;
+    --bs-table-border-color: #30363d;
+    --bs-btn-bg: #21262d;
+    --bs-btn-border-color: #30363d;
+    --bs-btn-color: #e6edf3;
+    --bs-modal-bg: #161b22;
+    --bs-modal-header-border-color: #30363d;
+    --bs-modal-footer-border-color: #30363d;
+    --bs-dropdown-bg: #161b22;
+    --bs-dropdown-border-color: #30363d;
+    --bs-dropdown-link-color: #e6edf3;
+    --bs-dropdown-link-hover-bg: #21262d;
+    --bs-alert-bg: #161b22;
+    --bs-alert-border-color: #30363d;
+    --bs-alert-color: #e6edf3;
+  }
+}
+
+/* ========================================
+   COMPONENTES ESPECÍFICOS
+======================================== */
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: relative;
+  background: none;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bs-body-color);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bs-tertiary-color);
+  transform: scale(1.1);
+}
+
+.theme-toggle i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover i {
+  transform: rotate(180deg);
+}
+
+/* Loading animation para mudança de tema */
+.theme-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Charts em modo escuro */
+.theme-dark .chart-container canvas {
+  filter: brightness(0.9);
+}
+
+/* Code blocks */
+.theme-dark pre,
+.theme-dark code {
+  background-color: #0d1117 !important;
+  color: #e6edf3 !important;
+  border-color: #30363d !important;
+}
+
+/* Scrollbars em modo escuro */
+.theme-dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-dark ::-webkit-scrollbar-track {
+  background: #161b22;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* ========================================
+   ANIMAÇÕES E TRANSIÇÕES
+======================================== */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Evita transição em elementos que não devem ter */
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .theme-toggle i {
+    font-size: 1rem;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+======================================== */
+@media print {
+  .theme-dark {
+    --bs-body-bg: #ffffff !important;
+    --bs-body-color: #000000 !important;
+    --bs-card-bg: #ffffff !important;
+  }
+}

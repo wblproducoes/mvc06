@@ -15,6 +15,174 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.6.0] - 2025-01-13
+
+### 🌙 Modo Escuro Completo e Sistema de Temas
+
+#### ✨ Adicionado
+- **Sistema de Temas Completo**
+  - Modo Claro, Escuro e Automático (segue preferência do sistema)
+  - Alternância suave entre temas com transições CSS
+  - Persistência de preferência por usuário no banco de dados
+  - Fallback para localStorage e cookies para usuários não logados
+  - Sincronização automática com servidor
+
+- **Interface de Modo Escuro**
+  - Design escuro completo e consistente em todos os componentes
+  - Paleta de cores otimizada para baixa luminosidade
+  - Suporte a todos os componentes Bootstrap 5.3
+  - Variáveis CSS customizáveis para fácil manutenção
+  - Compatibilidade com preferência do sistema operacional
+
+- **Controles de Tema Intuitivos**
+  - Botão de alternância rápida na navbar
+  - Seletor de tema no menu do usuário
+  - Atalho de teclado (Ctrl/Cmd + Shift + T)
+  - Ícones visuais para cada modo de tema
+  - Tooltips informativos
+
+- **Gerenciamento Avançado de Temas**
+  - Service dedicado (`ThemeService`) para lógica de temas
+  - Controller específico (`ThemeController`) para API de temas
+  - Middleware automático para aplicação de temas
+  - Sistema de migração para usuários existentes
+
+- **Ferramentas CLI de Temas**
+  - Script `cli/theme-manager.php` para gerenciamento via terminal
+  - Estatísticas de uso de temas
+  - Migração em lote de usuários
+  - Configuração de tema para usuários específicos
+  - Operações em massa para todos os usuários
+
+#### 🎨 Design e UX
+- **Modo Escuro Profissional**
+  - Cores baseadas no GitHub Dark Theme
+  - Contraste otimizado para acessibilidade
+  - Redução de fadiga visual em ambientes com pouca luz
+  - Consistência visual em todos os componentes
+
+- **Transições Suaves**
+  - Animações CSS para mudanças de tema
+  - Transições de 300ms para cores e backgrounds
+  - Efeitos visuais no botão de alternância
+  - Feedback visual imediato
+
+- **Responsividade Completa**
+  - Suporte a dispositivos móveis e tablets
+  - Meta tag theme-color dinâmica para mobile
+  - Adaptação automática em diferentes tamanhos de tela
+  - Otimização para touch interfaces
+
+#### 🔧 Funcionalidades Técnicas
+
+**Detecção Automática:**
+- Detecção da preferência do sistema operacional
+- Aplicação automática do tema no carregamento
+- Monitoramento de mudanças na preferência do sistema
+- Fallback inteligente para temas não suportados
+
+**Persistência Multi-Camada:**
+- Banco de dados para usuários logados
+- localStorage para persistência local
+- Cookies para compatibilidade cross-session
+- Sessão PHP como backup
+
+**API de Temas:**
+- Endpoints REST para gerenciamento de temas
+- Sincronização automática com servidor
+- Estatísticas de uso para administradores
+- Configuração via JSON
+
+#### 📊 Componentes Suportados
+- **Bootstrap 5.3**: Cards, Modals, Forms, Tables, Buttons
+- **Navegação**: Navbar, Sidebar, Breadcrumbs, Pagination
+- **Formulários**: Inputs, Selects, Textareas, Floating Labels
+- **Feedback**: Alerts, Toasts, Progress Bars
+- **Dados**: Tables, Lists, Dropdowns
+- **Gráficos**: Compatibilidade com Chart.js
+- **Código**: Syntax highlighting em modo escuro
+
+#### 🛠️ Arquitetura Técnica
+
+**ThemeService:**
+- Gerenciamento centralizado de temas
+- Persistência em banco de dados
+- Configuração por usuário
+- Estatísticas de uso
+- Migração automática
+
+**ThemeController:**
+- API REST para alternância de temas
+- Endpoints de configuração
+- Sincronização com frontend
+- Logs de auditoria
+
+**CSS Avançado:**
+- Variáveis CSS customizáveis
+- Media queries para preferência do sistema
+- Seletores específicos por tema
+- Otimização para performance
+
+**JavaScript Inteligente:**
+- Classe ThemeManager completa
+- Event listeners para mudanças
+- Sincronização automática
+- Detecção de preferências do sistema
+
+#### 📋 Endpoints da API
+```bash
+POST /theme/toggle          # Alterna tema do usuário
+GET  /theme/config          # Configuração atual do tema
+GET  /api/theme/stats       # Estatísticas de uso (admin)
+```
+
+#### 🛠️ Ferramentas CLI
+```bash
+# Estatísticas de uso
+php cli/theme-manager.php stats
+
+# Migrar usuários existentes
+php cli/theme-manager.php migrate
+
+# Definir tema para usuário
+php cli/theme-manager.php set 1 dark
+
+# Reset tema do usuário
+php cli/theme-manager.php reset 1
+
+# Definir tema para todos
+php cli/theme-manager.php bulk-set auto
+```
+
+#### 🔒 Recursos de Segurança
+- Validação de entrada para temas
+- Sanitização de dados de preferência
+- Logs de auditoria para mudanças
+- Proteção contra ataques de preferência
+- Rate limiting para mudanças de tema
+
+#### ⚡ Performance
+- CSS otimizado com variáveis
+- JavaScript assíncrono
+- Cache de preferências
+- Transições GPU-aceleradas
+- Carregamento otimizado de estilos
+
+#### 🌐 Compatibilidade
+- **Navegadores**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **Dispositivos**: Desktop, Tablet, Mobile
+- **Sistemas**: Windows, macOS, Linux, iOS, Android
+- **Acessibilidade**: WCAG 2.1 AA compliant
+
+#### 📱 Mobile First
+- Design responsivo completo
+- Touch-friendly controls
+- Meta theme-color dinâmica
+- Otimização para PWA
+- Suporte a gestos nativos
+
+---
+
 ## [1.5.0] - 2025-01-13
 
 ### 🚀 Sistema de Instalação Inteligente

@@ -12,11 +12,13 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Core\Database;
 use App\Core\Security;
+use App\Services\ThemeService;
 
 abstract class BaseController
 {
     protected Environment $twig;
     protected Database $database;
+    protected ThemeService $themeService;
     
     /**
      * Construtor do controller base
@@ -25,6 +27,7 @@ abstract class BaseController
     {
         $this->initializeTwig();
         $this->database = new Database();
+        $this->themeService = new ThemeService();
         $this->validateSession();
     }
     
@@ -50,6 +53,11 @@ abstract class BaseController
         $this->twig->addGlobal('flash_messages', $this->getFlashMessages());
         $this->twig->addGlobal('app_version', \App\Core\Version::get());
         $this->twig->addGlobal('app_version_full', \App\Core\Version::getFull());
+        
+        // Adiciona configuração de tema
+        $user = $this->getCurrentUser();
+        $this->twig->addGlobal('theme_config', $this->themeService->getThemeConfig($user['id'] ?? null));
+        $this->twig->addGlobal('theme_classes', $this->themeService->getThemeClasses($user['id'] ?? null));
     }
     
     /**

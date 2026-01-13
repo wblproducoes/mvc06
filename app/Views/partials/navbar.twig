@@ -11,6 +11,14 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <!-- Theme Toggle -->
+                <li class="nav-item me-2">
+                    <button class="btn theme-toggle" type="button" title="Alternar tema">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                </li>
+                
+                <!-- User Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle"></i>
@@ -20,6 +28,23 @@
                         <li><a class="dropdown-item" href="/perfil">
                             <i class="bi bi-person"></i> Meu Perfil
                         </a></li>
+                        <li><h6 class="dropdown-header">Preferências</h6></li>
+                        <li>
+                            <div class="dropdown-item-text">
+                                <small class="text-muted">Tema:</small>
+                                <select class="form-select form-select-sm theme-selector mt-1">
+                                    <option value="light" {{ theme_config.current == 'light' ? 'selected' : '' }}>
+                                        <i class="fas fa-sun"></i> Claro
+                                    </option>
+                                    <option value="dark" {{ theme_config.current == 'dark' ? 'selected' : '' }}>
+                                        <i class="fas fa-moon"></i> Escuro
+                                    </option>
+                                    <option value="auto" {{ theme_config.current == 'auto' ? 'selected' : '' }}>
+                                        <i class="fas fa-adjust"></i> Automático
+                                    </option>
+                                </select>
+                            </div>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/logout">
                             <i class="bi bi-box-arrow-right"></i> Sair

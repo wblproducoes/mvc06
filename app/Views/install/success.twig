@@ -6,6 +6,7 @@
     <title>Instalação Concluída - {{ app_name }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/dark-mode.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -103,6 +104,12 @@
     <div class="success-container">
         <div class="success-card">
             <div class="success-header">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div></div>
+                    <button class="btn btn-sm btn-outline-light theme-toggle" type="button" title="Alternar tema">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                </div>
                 <div class="success-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -179,6 +186,7 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/theme-manager.js"></script>
     <script>
         // Auto-redirect após 10 segundos
         let countdown = 10;

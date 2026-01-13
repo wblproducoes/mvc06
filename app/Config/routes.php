@@ -147,6 +147,12 @@ $router->get('/logs/monitor', 'LogController', 'monitor')
 $router->get('/logs/stream', 'LogController', 'streamLogs')
     ->middleware(AuthMiddleware::class);
 
+// Rotas de tema
+$router->post('/theme/toggle', 'ThemeController', 'toggle');
+$router->get('/theme/config', 'ThemeController', 'config');
+$router->get('/api/theme/stats', 'ThemeController', 'stats')
+    ->middleware(AuthMiddleware::class);
+
 // Rotas de relatórios
 $router->get('/relatorios', 'RelatorioController', 'index')
     ->middleware(AuthMiddleware::class);
