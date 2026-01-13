@@ -1,8 +1,8 @@
 {
-    "version": "1.6.0",
-    "build": "20250113006",
+    "version": "1.7.0",
+    "build": "20250113007",
     "release_date": "2025-01-13",
-    "codename": "Dark Mode",
+    "codename": "Calendar System",
     "php_min": "8.4.0",
     "stability": "stable",
     "features": [
@@ -13,8 +13,9 @@
         "API REST Completa",
         "Sistema de Logs Avançado",
         "Instalação Inteligente",
-        "Modo Escuro Completo"
+        "Modo Escuro Completo",
+        "Sistema de Calendário/Agenda"
     ],
     "changelog_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.6.0"
+    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.7.0"
 }

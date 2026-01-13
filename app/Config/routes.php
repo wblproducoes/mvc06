@@ -153,6 +153,37 @@ $router->get('/theme/config', 'ThemeController', 'config');
 $router->get('/api/theme/stats', 'ThemeController', 'stats')
     ->middleware(AuthMiddleware::class);
 
+// Rotas de calendário/agenda
+$router->get('/calendario', 'CalendarController', 'index')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/calendario/eventos', 'CalendarController', 'events')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/calendario/evento/{id}', 'CalendarController', 'show')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/calendario/evento', 'CalendarController', 'store')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/calendario/evento/{id}', 'CalendarController', 'update')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/calendario/evento/{id}/datas', 'CalendarController', 'updateDates')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/calendario/evento/{id}/deletar', 'CalendarController', 'destroy')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/calendario/convites', 'CalendarController', 'invites')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/calendario/convite/{id}/responder', 'CalendarController', 'respondInvite')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/calendario/proximos', 'CalendarController', 'upcoming')
+    ->middleware(AuthMiddleware::class);
+
 // Rotas de relatórios
 $router->get('/relatorios', 'RelatorioController', 'index')
     ->middleware(AuthMiddleware::class);

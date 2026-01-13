@@ -86,3 +86,22 @@ INSERT INTO `{prefix}school_subjects` (`name`, `translate`, `description`) VALUE
 ON DUPLICATE KEY UPDATE 
   `translate` = VALUES(`translate`),
   `description` = VALUES(`description`);
+
+-- --------------------------------------------------------
+-- Configurações padrão do calendário para usuários existentes
+-- --------------------------------------------------------
+
+-- Inserir configurações padrão para usuários existentes
+INSERT IGNORE INTO `{prefix}calendar_settings` (`user_id`, `default_view`, `default_color`, `show_weekends`, `start_time`, `end_time`, `timezone`, `email_notifications`, `reminder_default`)
+SELECT 
+    id,
+    'dayGridMonth',
+    '#007bff',
+    1,
+    '08:00:00',
+    '18:00:00',
+    'America/Sao_Paulo',
+    1,
+    15
+FROM `{prefix}users` 
+WHERE deleted_at IS NULL;

@@ -298,4 +298,78 @@ ALTER TABLE `{prefix}school_schedules`
   ADD CONSTRAINT `fk_school_schedules_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `{prefix}users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_school_schedules_subject` FOREIGN KEY (`subject_id`) REFERENCES `{prefix}school_subjects` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- ========================================
+-- SISTEMA DE AGENDA/CALENDÁRIO
+-- ========================================
+
+-- Tabela de Eventos do Calendário
+CREATE TABLE IF NOT EXISTS `{prefix}calendar_events` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT 'Criador do evento',
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Título do evento',
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Descrição detalhada',
+  `start_date` datetime NOT NULL COMMENT 'Data/hora de início',
+  `end_date` datetime NOT NULL COMMENT 'Data/hora de término',
+  `all_day` tinyint(1) DEFAULT 0 COMMENT 'Se é evento de dia inteiro',
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#007bff' COMMENT 'Cor do evento no calendário',
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Local do evento',
+  `is_public` tinyint(1) DEFAULT 0 COMMENT 'Se é visível para todos',
+  `reminder_minutes` int(11) DEFAULT NULL COMMENT 'Minutos antes para lembrete',
+  `recurrence` enum('none','daily','weekly','monthly','yearly') COLLATE utf8mb4_unicode_ci DEFAULT 'none' COMMENT 'Tipo de recorrência',
+  `recurrence_end` date DEFAULT NULL COMMENT 'Data fim da recorrência',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Soft delete',
+  PRIMARY KEY (`id`),
+  KEY `idx_calendar_events_user` (`user_id`),
+  KEY `idx_calendar_events_dates` (`start_date`, `end_date`),
+  KEY `idx_calendar_events_public` (`is_public`),
+  KEY `idx_calendar_events_deleted` (`deleted_at`),
+  KEY `idx_calendar_events_recurrence` (`recurrence`, `recurrence_end`),
+  KEY `idx_calendar_events_user_dates` (`user_id`, `start_date`, `end_date`),
+  KEY `idx_calendar_events_public_dates` (`is_public`, `start_date`, `end_date`),
+  CONSTRAINT `fk_calendar_events_user` FOREIGN KEY (`user_id`) REFERENCES `{prefix}users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Eventos do sistema de calendário com suporte a recorrência e participantes';
+
+-- Tabela de Participantes/Convites dos Eventos
+CREATE TABLE IF NOT EXISTS `{prefix}calendar_event_participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL COMMENT 'ID do evento',
+  `user_id` int(11) NOT NULL COMMENT 'ID do usuário convidado',
+  `status` enum('pending','accepted','declined') COLLATE utf8mb4_unicode_ci DEFAULT 'pending' COMMENT 'Status do convite',
+  `invited_by` int(11) NOT NULL COMMENT 'Quem enviou o convite',
+  `invited_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data do convite',
+  `responded_at` timestamp NULL DEFAULT NULL COMMENT 'Data da resposta',
+  `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Notas do participante',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_event_participant` (`event_id`, `user_id`),
+  KEY `idx_event_participants_event` (`event_id`),
+  KEY `idx_event_participants_user` (`user_id`),
+  KEY `idx_event_participants_status` (`status`),
+  KEY `idx_event_participants_invited_by` (`invited_by`),
+  KEY `idx_event_participants_user_status` (`user_id`, `status`),
+  CONSTRAINT `fk_event_participants_event` FOREIGN KEY (`event_id`) REFERENCES `{prefix}calendar_events` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_event_participants_user` FOREIGN KEY (`user_id`) REFERENCES `{prefix}users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_event_participants_invited_by` FOREIGN KEY (`invited_by`) REFERENCES `{prefix}users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Participantes e convites dos eventos do calendário';
+
+-- Tabela de Configurações do Calendário por Usuário
+CREATE TABLE IF NOT EXISTS `{prefix}calendar_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT 'ID do usuário',
+  `default_view` enum('dayGridMonth','timeGridWeek','timeGridDay','listWeek') COLLATE utf8mb4_unicode_ci DEFAULT 'dayGridMonth' COMMENT 'Visualização padrão',
+  `default_color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#007bff' COMMENT 'Cor padrão para novos eventos',
+  `show_weekends` tinyint(1) DEFAULT 1 COMMENT 'Mostrar fins de semana',
+  `start_time` time DEFAULT '08:00:00' COMMENT 'Hora de início da visualização',
+  `end_time` time DEFAULT '18:00:00' COMMENT 'Hora de fim da visualização',
+  `timezone` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'America/Sao_Paulo' COMMENT 'Fuso horário',
+  `email_notifications` tinyint(1) DEFAULT 1 COMMENT 'Receber notificações por email',
+  `reminder_default` int(11) DEFAULT 15 COMMENT 'Lembrete padrão em minutos',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_calendar_settings` (`user_id`),
+  CONSTRAINT `fk_calendar_settings_user` FOREIGN KEY (`user_id`) REFERENCES `{prefix}users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Configurações personalizadas do calendário por usuário';
+
 COMMIT;

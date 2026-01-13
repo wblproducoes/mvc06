@@ -1,0 +1,729 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+<style>
+    .fc-event {
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    
+    .fc-event:hover {
+        opacity: 0.8;
+    }
+    
+    .calendar-sidebar {
+        background: var(--bs-card-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .upcoming-event {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-left: 4px solid;
+        background: var(--bs-card-bg);
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .upcoming-event:hover {
+        transform: translateX(2px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .color-picker {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .color-option {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .color-option:hover,
+    .color-option.selected {
+        border-color: #fff;
+        box-shadow: 0 0 0 2px var(--bs-primary);
+        transform: scale(1.1);
+    }
+    
+    .fc-toolbar {
+        margin-bottom: 1rem !important;
+    }
+    
+    .fc-toolbar-title {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+    }
+    
+    .fc-button {
+        border-radius: 6px !important;
+    }
+    
+    .fc-daygrid-event {
+        border-radius: 4px !important;
+        padding: 2px 4px !important;
+    }
+    
+    .fc-timegrid-event {
+        border-radius: 4px !important;
+    }
+    
+    @media (max-width: 768px) {
+        .calendar-container {
+            padding: 0.5rem;
+        }
+        
+        .fc-toolbar {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar com informações -->
+        <div class="col-lg-3 col-md-4 mb-4">
+            <!-- Botão Novo Evento -->
+            <div class="calendar-sidebar">
+                <button class="btn btn-primary w-100 mb-3" id="newEventBtn">
+                    <i class="fas fa-plus"></i> Novo Evento
+                </button>
+                
+                <!-- Convites Pendentes -->
+                {% if pending_invites_count > 0 %}
+                <div class="alert alert-info">
+                    <i class="fas fa-envelope"></i>
+                    Você tem <strong>{{ pending_invites_count }}</strong> convite(s) pendente(s).
+                    <a href="/calendario/convites" class="alert-link">Ver convites</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Próximos Eventos -->
+            {% if upcoming_events %}
+            <div class="calendar-sidebar">
+                <h6 class="mb-3">
+                    <i class="fas fa-clock"></i> Próximos Eventos
+                </h6>
+                {% for event in upcoming_events %}
+                <div class="upcoming-event" 
+                     style="border-left-color: {{ event.color }}"
+                     data-event-id="{{ event.id }}"
+                     onclick="viewEvent({{ event.id }})">
+                    <div class="fw-bold">{{ event.title }}</div>
+                    <small class="text-muted">
+                        <i class="fas fa-calendar"></i>
+                        {{ event.start_date|date('d/m/Y H:i') }}
+                    </small>
+                    {% if event.location %}
+                    <br><small class="text-muted">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ event.location }}
+                    </small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Legenda de Cores -->
+            <div class="calendar-sidebar">
+                <h6 class="mb-3">
+                    <i class="fas fa-palette"></i> Cores
+                </h6>
+                <div class="color-picker">
+                    {% for color, name in colors %}
+                    <div class="color-option" 
+                         style="background-color: {{ color }}"
+                         title="{{ name }}"
+                         data-color="{{ color }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calendário Principal -->
+        <div class="col-lg-9 col-md-8">
+            <div class="card">
+                <div class="card-body calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo/Editar Evento -->
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalTitle">Novo Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="eventForm">
+                <div class="modal-body">
+                    <input type="hidden" id="eventId" name="event_id">
+                    
+                    <!-- Título -->
+                    <div class="mb-3">
+                        <label for="eventTitle" class="form-label">Título *</label>
+                        <input type="text" class="form-control" id="eventTitle" name="title" required>
+                    </div>
+                    
+                    <!-- Descrição -->
+                    <div class="mb-3">
+                        <label for="eventDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="eventDescription" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <!-- Datas -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="eventStart" class="form-label">Data/Hora Início *</label>
+                            <input type="datetime-local" class="form-control" id="eventStart" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="eventEnd" class="form-label">Data/Hora Fim *</label>
+                            <input type="datetime-local" class="form-control" id="eventEnd" name="end_date" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Dia Inteiro -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="eventAllDay" name="all_day">
+                        <label class="form-check-label" for="eventAllDay">
+                            Evento de dia inteiro
+                        </label>
+                    </div>
+                    
+                    <!-- Local -->
+                    <div class="mb-3">
+                        <label for="eventLocation" class="form-label">Local</label>
+                        <input type="text" class="form-control" id="eventLocation" name="location">
+                    </div>
+                    
+                    <!-- Cor -->
+                    <div class="mb-3">
+                        <label class="form-label">Cor do Evento</label>
+                        <div class="color-picker">
+                            {% for color, name in colors %}
+                            <div class="color-option" 
+                                 style="background-color: {{ color }}"
+                                 title="{{ name }}"
+                                 data-color="{{ color }}"
+                                 onclick="selectColor('{{ color }}')">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="eventColor" name="color" value="{{ settings.default_color }}">
+                    </div>
+                    
+                    <!-- Lembrete -->
+                    <div class="mb-3">
+                        <label for="eventReminder" class="form-label">Lembrete</label>
+                        <select class="form-select" id="eventReminder" name="reminder_minutes">
+                            <option value="">Sem lembrete</option>
+                            <option value="5">5 minutos antes</option>
+                            <option value="15" selected>15 minutos antes</option>
+                            <option value="30">30 minutos antes</option>
+                            <option value="60">1 hora antes</option>
+                            <option value="1440">1 dia antes</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Recorrência -->
+                    <div class="mb-3">
+                        <label for="eventRecurrence" class="form-label">Repetir</label>
+                        <select class="form-select" id="eventRecurrence" name="recurrence">
+                            {% for key, name in recurrence_types %}
+                            <option value="{{ key }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Público -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="eventPublic" name="is_public">
+                        <label class="form-check-label" for="eventPublic">
+                            Evento público (visível para todos)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn" style="display: none;">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveEventBtn">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visualizar Evento -->
+<div class="modal fade" id="viewEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewEventTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="viewEventBody">
+                <!-- Conteúdo carregado via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="editEventBtn" style="display: none;">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/pt-br.global.min.js"></script>
+
+<script>
+let calendar;
+let currentEvent = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCalendar();
+    setupEventHandlers();
+});
+
+function initializeCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: '{{ settings.default_view }}',
+        locale: 'pt-br',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        buttonText: {
+            today: 'Hoje',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            list: 'Lista'
+        },
+        height: 'auto',
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: {{ settings.show_weekends ? 'true' : 'false' }},
+        businessHours: {
+            startTime: '{{ settings.start_time }}',
+            endTime: '{{ settings.end_time }}'
+        },
+        
+        // Carrega eventos
+        events: '/calendario/eventos',
+        
+        // Clique em data vazia - criar evento
+        select: function(info) {
+            openEventModal(null, info.start, info.end, info.allDay);
+        },
+        
+        // Clique em evento - visualizar
+        eventClick: function(info) {
+            viewEvent(info.event.id);
+        },
+        
+        // Arrastar evento - atualizar datas
+        eventDrop: function(info) {
+            updateEventDates(info.event.id, info.event.start, info.event.end);
+        },
+        
+        // Redimensionar evento - atualizar duração
+        eventResize: function(info) {
+            updateEventDates(info.event.id, info.event.start, info.event.end);
+        },
+        
+        // Erro ao carregar eventos
+        eventSourceFailure: function(error) {
+            console.error('Erro ao carregar eventos:', error);
+            showAlert('Erro ao carregar eventos do calendário', 'danger');
+        }
+    });
+    
+    calendar.render();
+}
+
+function setupEventHandlers() {
+    // Botão novo evento
+    document.getElementById('newEventBtn').addEventListener('click', function() {
+        openEventModal();
+    });
+    
+    // Form de evento
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveEvent();
+    });
+    
+    // Botão excluir
+    document.getElementById('deleteEventBtn').addEventListener('click', function() {
+        if (currentEvent && confirm('Tem certeza que deseja excluir este evento?')) {
+            deleteEvent(currentEvent.id);
+        }
+    });
+    
+    // Botão editar no modal de visualização
+    document.getElementById('editEventBtn').addEventListener('click', function() {
+        if (currentEvent) {
+            document.getElementById('viewEventModal').querySelector('.btn-close').click();
+            setTimeout(() => openEventModal(currentEvent), 300);
+        }
+    });
+    
+    // Checkbox dia inteiro
+    document.getElementById('eventAllDay').addEventListener('change', function() {
+        const startInput = document.getElementById('eventStart');
+        const endInput = document.getElementById('eventEnd');
+        
+        if (this.checked) {
+            startInput.type = 'date';
+            endInput.type = 'date';
+        } else {
+            startInput.type = 'datetime-local';
+            endInput.type = 'datetime-local';
+        }
+    });
+}
+
+function openEventModal(event = null, start = null, end = null, allDay = false) {
+    currentEvent = event;
+    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+    const form = document.getElementById('eventForm');
+    
+    // Reset form
+    form.reset();
+    
+    if (event) {
+        // Editando evento existente
+        document.getElementById('eventModalTitle').textContent = 'Editar Evento';
+        document.getElementById('eventId').value = event.id;
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventDescription').value = event.extendedProps.description || '';
+        document.getElementById('eventStart').value = formatDateForInput(event.start, event.allDay);
+        document.getElementById('eventEnd').value = formatDateForInput(event.end, event.allDay);
+        document.getElementById('eventAllDay').checked = event.allDay;
+        document.getElementById('eventLocation').value = event.extendedProps.location || '';
+        document.getElementById('eventColor').value = event.color;
+        document.getElementById('eventPublic').checked = event.extendedProps.isPublic;
+        
+        selectColor(event.color);
+        document.getElementById('deleteEventBtn').style.display = event.extendedProps.isOwner ? 'inline-block' : 'none';
+    } else {
+        // Novo evento
+        document.getElementById('eventModalTitle').textContent = 'Novo Evento';
+        document.getElementById('deleteEventBtn').style.display = 'none';
+        
+        if (start) {
+            document.getElementById('eventStart').value = formatDateForInput(start, allDay);
+            document.getElementById('eventEnd').value = formatDateForInput(end || start, allDay);
+            document.getElementById('eventAllDay').checked = allDay;
+        }
+        
+        selectColor('{{ settings.default_color }}');
+    }
+    
+    // Ajusta tipo de input baseado em dia inteiro
+    const startInput = document.getElementById('eventStart');
+    const endInput = document.getElementById('eventEnd');
+    if (document.getElementById('eventAllDay').checked) {
+        startInput.type = 'date';
+        endInput.type = 'date';
+    } else {
+        startInput.type = 'datetime-local';
+        endInput.type = 'datetime-local';
+    }
+    
+    modal.show();
+}
+
+function saveEvent() {
+    const form = document.getElementById('eventForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Converte checkbox para boolean
+    data.all_day = document.getElementById('eventAllDay').checked;
+    data.is_public = document.getElementById('eventPublic').checked;
+    
+    const eventId = document.getElementById('eventId').value;
+    const url = eventId ? `/calendario/evento/${eventId}` : '/calendario/evento';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showAlert(result.message, 'success');
+            calendar.refetchEvents();
+            document.getElementById('eventModal').querySelector('.btn-close').click();
+        } else {
+            showAlert(result.error, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showAlert('Erro ao salvar evento', 'danger');
+    });
+}
+
+function viewEvent(eventId) {
+    fetch(`/calendario/evento/${eventId}`)
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showEventDetails(result.event, result.participants, result.can_edit);
+        } else {
+            showAlert(result.error, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showAlert('Erro ao carregar evento', 'danger');
+    });
+}
+
+function showEventDetails(event, participants, canEdit) {
+    currentEvent = event;
+    
+    document.getElementById('viewEventTitle').textContent = event.title;
+    
+    let html = `
+        <div class="mb-3">
+            <strong>Descrição:</strong><br>
+            ${event.description || 'Sem descrição'}
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Início:</strong><br>
+                ${formatDateTime(event.start_date, event.all_day)}
+            </div>
+            <div class="col-md-6">
+                <strong>Fim:</strong><br>
+                ${formatDateTime(event.end_date, event.all_day)}
+            </div>
+        </div>
+    `;
+    
+    if (event.location) {
+        html += `
+            <div class="mb-3">
+                <strong>Local:</strong><br>
+                <i class="fas fa-map-marker-alt"></i> ${event.location}
+            </div>
+        `;
+    }
+    
+    if (event.recurrence !== 'none') {
+        html += `
+            <div class="mb-3">
+                <strong>Repetição:</strong><br>
+                ${getRecurrenceText(event.recurrence)}
+            </div>
+        `;
+    }
+    
+    if (participants.length > 0) {
+        html += `
+            <div class="mb-3">
+                <strong>Participantes:</strong><br>
+        `;
+        
+        participants.forEach(p => {
+            const statusIcon = getStatusIcon(p.status);
+            html += `<span class="badge bg-${getStatusColor(p.status)} me-1">${statusIcon} ${p.user_name}</span>`;
+        });
+        
+        html += '</div>';
+    }
+    
+    document.getElementById('viewEventBody').innerHTML = html;
+    document.getElementById('editEventBtn').style.display = canEdit ? 'inline-block' : 'none';
+    
+    const modal = new bootstrap.Modal(document.getElementById('viewEventModal'));
+    modal.show();
+}
+
+function updateEventDates(eventId, start, end) {
+    const data = {
+        start: start.toISOString(),
+        end: end ? end.toISOString() : start.toISOString()
+    };
+    
+    fetch(`/calendario/evento/${eventId}/datas`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showAlert(result.message, 'success');
+        } else {
+            showAlert(result.error, 'danger');
+            calendar.refetchEvents(); // Reverte mudança
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showAlert('Erro ao mover evento', 'danger');
+        calendar.refetchEvents(); // Reverte mudança
+    });
+}
+
+function deleteEvent(eventId) {
+    fetch(`/calendario/evento/${eventId}/deletar`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showAlert(result.message, 'success');
+            calendar.refetchEvents();
+            document.getElementById('eventModal').querySelector('.btn-close').click();
+        } else {
+            showAlert(result.error, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showAlert('Erro ao excluir evento', 'danger');
+    });
+}
+
+function selectColor(color) {
+    // Remove seleção anterior
+    document.querySelectorAll('.color-option').forEach(el => {
+        el.classList.remove('selected');
+    });
+    
+    // Seleciona nova cor
+    document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+    document.getElementById('eventColor').value = color;
+}
+
+function formatDateForInput(date, allDay) {
+    if (!date) return '';
+    
+    const d = new Date(date);
+    if (allDay) {
+        return d.toISOString().split('T')[0];
+    } else {
+        return d.toISOString().slice(0, 16);
+    }
+}
+
+function formatDateTime(dateStr, allDay) {
+    const date = new Date(dateStr);
+    if (allDay) {
+        return date.toLocaleDateString('pt-BR');
+    } else {
+        return date.toLocaleString('pt-BR');
+    }
+}
+
+function getRecurrenceText(recurrence) {
+    const types = {
+        'daily': 'Diariamente',
+        'weekly': 'Semanalmente',
+        'monthly': 'Mensalmente',
+        'yearly': 'Anualmente'
+    };
+    return types[recurrence] || 'Sem repetição';
+}
+
+function getStatusIcon(status) {
+    const icons = {
+        'pending': '⏳',
+        'accepted': '✅',
+        'declined': '❌'
+    };
+    return icons[status] || '❓';
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'warning',
+        'accepted': 'success',
+        'declined': 'danger'
+    };
+    return colors[status] || 'secondary';
+}
+
+function showAlert(message, type) {
+    // Remove alertas existentes
+    document.querySelectorAll('.alert-floating').forEach(el => el.remove());
+    
+    // Cria novo alerta
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show alert-floating`;
+    alert.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alert);
+    
+    // Remove automaticamente após 5 segundos
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

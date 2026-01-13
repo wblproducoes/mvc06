@@ -15,6 +15,39 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.7.0] - 2025-01-13
+
+### 📅 Sistema de Calendário/Agenda Completo
+- **FullCalendar 6.x**: Integração completa com localização em português
+- **Gestão de Eventos**: Criar, editar, excluir e visualizar eventos
+- **Drag & Drop**: Arrastar eventos para alterar datas e horários
+- **Sistema de Convites**: Convidar participantes e gerenciar respostas
+- **Eventos Recorrentes**: Suporte a repetições diárias, semanais, mensais e anuais
+- **Cores Personalizadas**: 10 opções de cores para categorizar eventos
+- **Eventos Públicos**: Opção de tornar eventos visíveis para todos os usuários
+- **Lembretes**: Configurar notificações antes dos eventos
+- **Múltiplas Visualizações**: Mês, semana, dia e lista
+- **Responsivo**: Interface adaptada para dispositivos móveis
+- **Rotas em Português**: `/calendario/*` para melhor UX brasileira
+- **Integração com Schema Principal**: Tabelas do calendário integradas ao `schema.sql` principal
+- **Configurações Automáticas**: Configurações padrão criadas automaticamente para usuários existentes
+
+### 🔧 Configuração e Deploy
+- **Arquivo .env**: Criado arquivo de configuração baseado no .env.example
+- **Dependências**: Instalação automática das dependências do Composer
+- **Redirecionamento**: Configurado .htaccess para redirecionamento automático para /public
+- **Configuração de Servidor**: Suporte para Apache com mod_rewrite e servidor PHP interno
+- **URL Correta**: Sistema configurado para funcionar em `http://localhost/mvc06/public/`
+- **Instalação Automática**: Sistema detecta automaticamente necessidade de instalação
+
+### 🛠️ Melhorias Técnicas
+- **Schema Consolidado**: Todas as tabelas do calendário integradas ao schema principal
+- **Migração Simplificada**: Processo de migração unificado sem arquivos SQL separados
+- **Configurações Padrão**: Seeds automáticos para configurações do calendário
+- **Estrutura Limpa**: Remoção de arquivos SQL duplicados e consolidação da estrutura
+
+---
+
 ## [1.6.0] - 2025-01-13
 
 ### 🌙 Modo Escuro Completo e Sistema de Temas

@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# Redireciona para a pasta public
+RewriteCond %{REQUEST_URI} !^/mvc06/public/
+RewriteRule ^(.*)$ /mvc06/public/$1 [R=301,L]
+
+# Bloqueia acesso direto a arquivos sensíveis
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.json">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.lock">
+    Order allow,deny
+    Deny from all
+</Files>
