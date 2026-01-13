@@ -7,6 +7,13 @@
  */
 
 use App\Middleware\AuthMiddleware;
+use App\Middleware\InstallationMiddleware;
+
+// Rotas de instalação (sem middleware de autenticação)
+$router->get('/install', 'InstallController', 'index');
+$router->post('/install/process', 'InstallController', 'process');
+$router->get('/install/success', 'InstallController', 'success');
+$router->get('/install/status', 'InstallController', 'status');
 
 // Rotas públicas (sem autenticação)
 $router->get('/', 'HomeController', 'index');

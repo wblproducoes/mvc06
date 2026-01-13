@@ -14,6 +14,7 @@ use App\Core\Security;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CsrfMiddleware;
 use App\Middleware\SecurityMiddleware;
+use App\Middleware\InstallationMiddleware;
 
 class Application
 {
@@ -55,12 +56,16 @@ class Application
      */
     private function applyGlobalMiddleware(): void
     {
+        // Middleware de instalação (primeiro de todos)
+        $installationMiddleware = new InstallationMiddleware();
+        $installationMiddleware->handle();
+        
         // Middleware de segurança global
         $securityMiddleware = new SecurityMiddleware();
         $securityMiddleware->handle();
         
-        // Middleware CSRF para rotas POST
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Middleware CSRF para rotas POST (exceto instalação)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/install')) {
             $csrfMiddleware = new CsrfMiddleware();
             $csrfMiddleware->handle();
         }

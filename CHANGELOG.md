@@ -15,6 +15,155 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.5.0] - 2025-01-13
+
+### 🚀 Sistema de Instalação Inteligente
+
+#### ✨ Adicionado
+- **Sistema de Instalação Inteligente**
+  - Detecção automática se o sistema precisa ser instalado
+  - Verificação de existência de tabelas essenciais
+  - Instalação sem senha quando tabelas não existem
+  - Middleware `InstallationMiddleware` para verificação automática
+  - Endpoint `/install/status` para verificar status via API
+
+- **Funcionalidades de Instalação Automática**
+  - Redirecionamento automático para `/install` quando necessário
+  - Diferenciação entre primeira instalação e reinstalação
+  - Configuração do nome do sistema durante instalação
+  - Verificação de usuários existentes no banco
+  - Status detalhado da instalação
+
+- **Melhorias no Processo de Instalação**
+  - Campo obrigatório para nome do sistema
+  - Criação automática do usuário master (level_id = 1)
+  - Configuração automática das settings do sistema
+  - Validação de requisitos aprimorada
+  - Tratamento de erros mais robusto
+
+- **Interface de Instalação Moderna**
+  - Design responsivo com Bootstrap 5.3
+  - Indicadores visuais de progresso
+  - Verificação de requisitos em tempo real
+  - Validação de formulário client-side
+  - Feedback visual aprimorado
+
+- **Ferramentas CLI de Instalação**
+  - Script `cli/install-check.php` para verificação de status
+  - Comandos para forçar reinstalação
+  - Reset completo do sistema via CLI
+  - Verificação de integridade do banco
+
+#### 🔧 Melhorado
+- **Experiência do Usuário**
+  - Instalação mais fluida e intuitiva
+  - Não pede senha na primeira instalação
+  - Feedback visual melhorado
+  - Redirecionamento automático inteligente
+  - Página de sucesso com countdown automático
+
+- **Segurança**
+  - Senha de instalação apenas para reinstalações
+  - Verificação de integridade do banco
+  - Validação de tabelas essenciais
+  - Proteção contra instalações desnecessárias
+  - Logs de segurança durante instalação
+
+- **Robustez**
+  - Tratamento de erros de conexão
+  - Fallback para instalação em caso de erro
+  - Verificação de arquivos estáticos
+  - Logs de erro detalhados
+  - Transações de banco para instalação
+
+#### 🛠️ Técnico
+- **InstallationMiddleware**
+  - Verificação automática de necessidade de instalação
+  - Detecção de primeira instalação vs reinstalação
+  - Status detalhado do sistema
+  - Tratamento de arquivos estáticos
+  - Integração com sistema de roteamento
+
+- **InstallController Atualizado**
+  - Lógica de instalação inteligente
+  - Configuração automática do sistema
+  - Validação aprimorada de dados
+  - API de status de instalação
+  - Criação automática de tabelas e dados
+
+- **Configurações**
+  - Variável `APP_TIMEZONE` no `.env`
+  - Configuração automática de timezone
+  - Settings do sistema configuráveis
+  - Suporte a prefixos de tabelas
+  - Tabela `system_settings` para configurações
+
+#### 📋 Fluxo de Instalação
+
+**Primeira Instalação (Tabelas não existem):**
+1. Sistema detecta ausência de tabelas
+2. Redireciona automaticamente para `/install`
+3. **Não pede senha de instalação**
+4. Solicita apenas dados do administrador e nome do sistema
+5. Cria todas as tabelas e configurações
+6. Redireciona para página de sucesso
+
+**Reinstalação (Tabelas existem):**
+1. Sistema detecta tabelas existentes mas sem usuários
+2. Redireciona para `/install`
+3. **Pede senha de instalação** (segurança)
+4. Permite reconfiguração do sistema
+5. Mantém dados existentes ou recria conforme necessário
+
+**Sistema Instalado:**
+1. Sistema detecta tabelas e usuários existentes
+2. Funciona normalmente
+3. Não redireciona para instalação
+
+#### 🔌 API de Status
+```bash
+GET /install/status
+{
+  "success": true,
+  "data": {
+    "needs_install": false,
+    "is_first_install": false,
+    "tables_exist": true,
+    "has_users": true,
+    "database_connected": true,
+    "system_ready": true
+  }
+}
+```
+
+#### 🛠️ Ferramentas CLI
+```bash
+# Verificar status
+php cli/install-check.php status
+
+# Forçar reinstalação
+php cli/install-check.php force
+
+# Reset completo
+php cli/install-check.php reset
+```
+
+#### 🔒 Recursos de Segurança
+- Middleware de instalação executado antes de qualquer outro
+- Verificação de integridade de tabelas essenciais
+- Proteção contra instalações desnecessárias
+- Logs de auditoria durante processo de instalação
+- Validação de dados de entrada robusta
+
+#### ⚡ Performance
+- Verificação otimizada de tabelas essenciais
+- Cache de status de instalação
+- Redirecionamentos eficientes
+- Queries otimizadas para verificação
+- Transações de banco para consistência
+
+---
+
 ## [1.4.0] - 2025-01-13
 
 ### 📊 Sistema de Logs Avançado - Nível Empresarial
@@ -495,6 +644,6 @@ php cli/log-manager.php test
 
 ## Links
 
-- [Repositório](https://github.com/seu-usuario/sistema-administrativo-mvc)
-- [Issues](https://github.com/seu-usuario/sistema-administrativo-mvc/issues)
-- [Releases](https://github.com/seu-usuario/sistema-administrativo-mvc/releases)
+- [Repositório](https://github.com/wblproducoes/mvc06)
+- [Issues](https://github.com/wblproducoes/mvc06/issues)
+- [Releases](https://github.com/wblproducoes/mvc06/releases)

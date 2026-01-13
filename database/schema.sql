@@ -235,6 +235,23 @@ CREATE TABLE IF NOT EXISTS `{prefix}audit_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+-- Tabela de Configurações do Sistema
+CREATE TABLE IF NOT EXISTS `{prefix}system_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `setting_value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `setting_type` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'string',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_public` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_key_unique` (`setting_key`),
+  KEY `idx_system_settings_key` (`setting_key`),
+  KEY `idx_system_settings_public` (`is_public`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 -- FOREIGN KEYS
 -- --------------------------------------------------------
 

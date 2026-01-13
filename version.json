@@ -1,8 +1,8 @@
 {
-    "version": "1.4.0",
-    "build": "20250113004",
+    "version": "1.5.0",
+    "build": "20250113005",
     "release_date": "2025-01-13",
-    "codename": "Advanced Logging",
+    "codename": "Smart Installation",
     "php_min": "8.4.0",
     "stability": "stable",
     "features": [
@@ -11,8 +11,9 @@
         "Gestão Escolar",
         "Segurança Empresarial",
         "API REST Completa",
-        "Sistema de Logs Avançado"
+        "Sistema de Logs Avançado",
+        "Instalação Inteligente"
     ],
     "changelog_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.4.0"
+    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.5.0"
 }

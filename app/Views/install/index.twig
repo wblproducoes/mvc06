@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalação - {{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .install-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .install-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .install-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .install-body {
+            padding: 2rem;
+        }
+        .requirement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .requirement-item:last-child {
+            border-bottom: none;
+        }
+        .status-icon {
+            width: 20px;
+            text-align: center;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0.5rem;
+            background: #e9ecef;
+            color: #6c757d;
+            font-weight: bold;
+        }
+        .step.active {
+            background: #007bff;
+            color: white;
+        }
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="install-container">
+        <div class="install-card">
+            <div class="install-header">
+                <h1><i class="fas fa-cogs"></i> Instalação do Sistema</h1>
+                <p class="mb-0">
+                    {% if is_first_install %}
+                        Bem-vindo! Vamos configurar seu sistema pela primeira vez.
+                    {% else %}
+                        Reinstalação do sistema detectada.
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="install-body">
+                <!-- Indicador de Passos -->
+                <div class="step-indicator">
+                    <div class="step completed">1</div>
+                    <div class="step active">2</div>
+                    <div class="step">3</div>
+                </div>
+                
+                <!-- Verificação de Requisitos -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-check-circle"></i> Verificação de Requisitos</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- PHP Version -->
+                        <div class="requirement-item">
+                            <span>PHP {{ requirements.php_version.required }}+</span>
+                            <div>
+                                <span class="badge bg-{{ requirements.php_version.status ? 'success' : 'danger' }}">
+                                    {{ requirements.php_version.current }}
+                                </span>
+                                <span class="status-icon">
+                                    <i class="fas fa-{{ requirements.php_version.status ? 'check text-success' : 'times text-danger' }}"></i>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Extensions -->
+                        {% for ext, status in requirements.extensions %}
+                        <div class="requirement-item">
+                            <span>Extensão {{ ext|upper }}</span>
+                            <div>
+                                <span class="badge bg-{{ status ? 'success' : 'danger' }}">
+                                    {{ status ? 'Instalada' : 'Não encontrada' }}
+                                </span>
+                                <span class="status-icon">
+                                    <i class="fas fa-{{ status ? 'check text-success' : 'times text-danger' }}"></i>
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Directories -->
+                        {% for dir, status in requirements.directories %}
+                        <div class="requirement-item">
+                            <span>Diretório {{ dir }} (escrita)</span>
+                            <div>
+                                <span class="badge bg-{{ status ? 'success' : 'danger' }}">
+                                    {{ status ? 'Gravável' : 'Sem permissão' }}
+                                </span>
+                                <span class="status-icon">
+                                    <i class="fas fa-{{ status ? 'check text-success' : 'times text-danger' }}"></i>
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Database -->
+                        <div class="requirement-item">
+                            <span>Conexão com Banco de Dados</span>
+                            <div>
+                                <span class="badge bg-{{ requirements.database ? 'success' : 'danger' }}">
+                                    {{ requirements.database ? 'Conectado' : 'Erro de conexão' }}
+                                </span>
+                                <span class="status-icon">
+                                    <i class="fas fa-{{ requirements.database ? 'check text-success' : 'times text-danger' }}"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status do Sistema -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Status do Sistema</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Tipo de Instalação:</strong> 
+                                    <span class="badge bg-{{ is_first_install ? 'primary' : 'warning' }}">
+                                        {{ is_first_install ? 'Primeira Instalação' : 'Reinstalação' }}
+                                    </span>
+                                </p>
+                                <p><strong>Tabelas Existem:</strong> 
+                                    <span class="badge bg-{{ status.tables_exist ? 'success' : 'secondary' }}">
+                                        {{ status.tables_exist ? 'Sim' : 'Não' }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Usuários Existem:</strong> 
+                                    <span class="badge bg-{{ status.has_users ? 'success' : 'secondary' }}">
+                                        {{ status.has_users ? 'Sim' : 'Não' }}
+                                    </span>
+                                </p>
+                                <p><strong>Banco Conectado:</strong> 
+                                    <span class="badge bg-{{ status.database_connected ? 'success' : 'danger' }}">
+                                        {{ status.database_connected ? 'Sim' : 'Não' }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formulário de Instalação -->
+                <form method="POST" action="/install/process" id="installForm">
+                    <!-- Senha de Instalação (apenas para reinstalação) -->
+                    {% if not is_first_install %}
+                    <div class="alert alert-warning alert-custom">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>Reinstalação Detectada:</strong> Por segurança, é necessário fornecer a senha de instalação.
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="password" class="form-control {{ errors.install_password ? 'is-invalid' : '' }}" 
+                               id="install_password" name="install_password" placeholder="Senha de Instalação" required>
+                        <label for="install_password"><i class="fas fa-key"></i> Senha de Instalação</label>
+                        {% if errors.install_password %}
+                        <div class="invalid-feedback">{{ errors.install_password }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Nome do Sistema -->
+                    <div class="form-floating">
+                        <input type="text" class="form-control {{ errors.system_name ? 'is-invalid' : '' }}" 
+                               id="system_name" name="system_name" placeholder="Nome do Sistema" 
+                               value="{{ form_data.system_name ?? app_name }}" required>
+                        <label for="system_name"><i class="fas fa-building"></i> Nome do Sistema</label>
+                        {% if errors.system_name %}
+                        <div class="invalid-feedback">{{ errors.system_name }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Dados do Administrador -->
+                    <h5 class="mt-4 mb-3"><i class="fas fa-user-shield"></i> Dados do Administrador</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control {{ errors.admin_name ? 'is-invalid' : '' }}" 
+                                       id="admin_name" name="admin_name" placeholder="Nome Completo" 
+                                       value="{{ form_data.admin_name ?? '' }}" required>
+                                <label for="admin_name"><i class="fas fa-user"></i> Nome Completo</label>
+                                {% if errors.admin_name %}
+                                <div class="invalid-feedback">{{ errors.admin_name }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control {{ errors.admin_username ? 'is-invalid' : '' }}" 
+                                       id="admin_username" name="admin_username" placeholder="Username" 
+                                       value="{{ form_data.admin_username ?? 'admin' }}" required>
+                                <label for="admin_username"><i class="fas fa-at"></i> Username</label>
+                                {% if errors.admin_username %}
+                                <div class="invalid-feedback">{{ errors.admin_username }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <input type="email" class="form-control {{ errors.admin_email ? 'is-invalid' : '' }}" 
+                               id="admin_email" name="admin_email" placeholder="Email" 
+                               value="{{ form_data.admin_email ?? '' }}" required>
+                        <label for="admin_email"><i class="fas fa-envelope"></i> Email</label>
+                        {% if errors.admin_email %}
+                        <div class="invalid-feedback">{{ errors.admin_email }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="password" class="form-control {{ errors.admin_password ? 'is-invalid' : '' }}" 
+                                       id="admin_password" name="admin_password" placeholder="Senha" required>
+                                <label for="admin_password"><i class="fas fa-lock"></i> Senha</label>
+                                {% if errors.admin_password %}
+                                <div class="invalid-feedback">{{ errors.admin_password }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="password" class="form-control {{ errors.admin_password_confirm ? 'is-invalid' : '' }}" 
+                                       id="admin_password_confirm" name="admin_password_confirm" placeholder="Confirmar Senha" required>
+                                <label for="admin_password_confirm"><i class="fas fa-lock"></i> Confirmar Senha</label>
+                                {% if errors.admin_password_confirm %}
+                                <div class="invalid-feedback">{{ errors.admin_password_confirm }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Erros Gerais -->
+                    {% if errors.general %}
+                    <div class="alert alert-danger alert-custom">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ errors.general }}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Botões -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="installBtn">
+                            <i class="fas fa-rocket"></i>
+                            {% if is_first_install %}
+                                Instalar Sistema
+                            {% else %}
+                                Reinstalar Sistema
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validação do formulário
+        document.getElementById('installForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('installBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Instalando...';
+            btn.disabled = true;
+        });
+        
+        // Validação de senha em tempo real
+        const password = document.getElementById('admin_password');
+        const confirmPassword = document.getElementById('admin_password_confirm');
+        
+        function validatePasswords() {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('As senhas não conferem');
+            } else {
+                confirmPassword.setCustomValidity('');
+            }
+        }
+        
+        password.addEventListener('input', validatePasswords);
+        confirmPassword.addEventListener('input', validatePasswords);
+    </script>
+</body>
+</html>
