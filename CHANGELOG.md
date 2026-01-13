@@ -12,7 +12,138 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Dashboard com widgets personalizáveis
 - Sistema de notificações em tempo real
 - Integração com storage em nuvem
-- Auditoria completa de ações
+
+---
+
+## [1.4.0] - 2025-01-13
+
+### 📊 Sistema de Logs Avançado - Nível Empresarial
+
+#### ✨ Adicionado
+- **Logger PSR-3 Compliant**
+  - 8 níveis de log (Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug)
+  - 8 canais especializados (System, Security, API, Database, Auth, Audit, Performance, Error)
+  - Processadores customizáveis para enriquecimento de dados
+  - Contexto estruturado com metadados automáticos
+  - Rotação automática de arquivos por tamanho e data
+
+- **Armazenamento Multi-Destino**
+  - Arquivos JSON estruturados com compressão automática
+  - Banco de dados com índices otimizados
+  - Webhooks para serviços externos (Sentry, LogStash, etc.)
+  - Configuração flexível de destinos
+
+- **Análise e Monitoramento**
+  - Detector de anomalias em tempo real
+  - Estatísticas detalhadas por período
+  - Análise de padrões e tendências
+  - Alertas automáticos para eventos críticos
+  - Dashboard visual com gráficos interativos
+
+- **Interface Web Completa**
+  - Dashboard de logs com estatísticas visuais
+  - Listagem com filtros avançados (nível, canal, período, busca)
+  - Visualização detalhada de logs individuais
+  - Gerador de relatórios personalizáveis
+  - Monitor em tempo real com Server-Sent Events
+
+- **Ferramentas CLI Avançadas**
+  - Gerenciador completo via linha de comando
+  - Análise de logs por período
+  - Limpeza automática de logs antigos
+  - Exportação em múltiplos formatos (JSON, CSV, TXT)
+  - Monitor em tempo real no terminal
+  - Detector de anomalias via CLI
+
+- **Recursos de Performance**
+  - Log de queries SQL com tempo de execução
+  - Monitoramento de uso de memória
+  - Rastreamento de tempo de resposta
+  - Detecção automática de queries lentas
+  - Métricas de performance por endpoint
+
+#### 🔧 Funcionalidades Técnicas
+
+**Rotação e Retenção**
+- Rotação automática por tamanho (10MB padrão)
+- Compressão GZIP de arquivos antigos
+- Limpeza automática após período configurável
+- Retenção configurável (90 dias padrão)
+- Backup automático antes da limpeza
+
+**Detecção de Anomalias**
+- Picos de erro por período
+- IPs com atividade suspeita
+- Falhas de autenticação em massa
+- Queries com performance degradada
+- Padrões de acesso anômalos
+
+**Integração com Sistema**
+- Log automático de todas as queries SQL
+- Rastreamento de ações de usuários
+- Log de eventos de segurança
+- Monitoramento de API requests
+- Auditoria de mudanças de dados
+
+#### 📊 Dashboard e Relatórios
+- **Estatísticas Visuais**: Gráficos de distribuição por nível e canal
+- **Atividade Temporal**: Análise de atividade por hora/dia
+- **Top Lists**: IPs mais ativos, erros mais frequentes
+- **Anomalias**: Alertas visuais para comportamentos suspeitos
+- **Filtros Avançados**: Busca por múltiplos critérios
+- **Exportação**: Relatórios em PDF, Excel, CSV
+
+#### 🛠️ Ferramentas CLI
+```bash
+# Análise de logs
+php cli/log-manager.php analyze 30
+
+# Estatísticas gerais
+php cli/log-manager.php stats 7
+
+# Detecção de anomalias
+php cli/log-manager.php anomalies 24
+
+# Limpeza de logs antigos
+php cli/log-manager.php cleanup 90
+
+# Exportação de logs
+php cli/log-manager.php export 2025-01-01 2025-01-31 json
+
+# Monitor em tempo real
+php cli/log-manager.php monitor
+
+# Teste do sistema
+php cli/log-manager.php test
+```
+
+#### 🔒 Segurança e Compliance
+- Sanitização automática de dados sensíveis
+- Logs de auditoria para compliance
+- Rastreamento de todas as ações administrativas
+- Detecção de tentativas de ataque
+- Logs de segurança separados e protegidos
+
+#### ⚡ Performance e Escalabilidade
+- Logs assíncronos para não impactar performance
+- Índices otimizados no banco de dados
+- Compressão automática de arquivos antigos
+- Configuração de níveis por ambiente
+- Rate limiting para evitar spam de logs
+
+#### 📈 Métricas e Monitoramento
+- Tempo de execução de queries
+- Uso de memória por requisição
+- Estatísticas de API por endpoint
+- Monitoramento de recursos do sistema
+- Alertas automáticos para thresholds
+
+#### 🔧 Configuração Flexível
+- Níveis de log por ambiente
+- Canais customizáveis
+- Destinos configuráveis
+- Rotação personalizada
+- Retenção por tipo de log
 
 ---
 

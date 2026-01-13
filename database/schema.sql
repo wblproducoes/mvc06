@@ -185,16 +185,31 @@ CREATE TABLE IF NOT EXISTS `{prefix}school_schedules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
--- Tabela de Logs do Sistema
+-- Tabela de Logs do Sistema (Avançada)
 CREATE TABLE IF NOT EXISTS `{prefix}system_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `level` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `channel` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'system',
   `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `context` json DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `session_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_uri` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `request_method` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `memory_usage` bigint DEFAULT NULL,
+  `execution_time` decimal(10,6) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_system_logs_level` (`level`),
-  KEY `idx_system_logs_created` (`created_at`)
+  KEY `idx_system_logs_channel` (`channel`),
+  KEY `idx_system_logs_created` (`created_at`),
+  KEY `idx_system_logs_user` (`user_id`),
+  KEY `idx_system_logs_ip` (`ip_address`),
+  KEY `idx_system_logs_level_created` (`level`, `created_at`),
+  KEY `idx_system_logs_channel_created` (`channel`, `created_at`),
+  CONSTRAINT `fk_system_logs_user` FOREIGN KEY (`user_id`) REFERENCES `{prefix}users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

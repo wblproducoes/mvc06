@@ -1,0 +1,367 @@
+{% extends "layouts/app.twig" %}
+
+{% block title %}Dashboard de Logs{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Dashboard de Logs</h1>
+            <p class="text-muted">Monitoramento e análise de logs do sistema</p>
+        </div>
+        <div class="btn-group">
+            <a href="/logs/list" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> Ver Logs
+            </a>
+            <a href="/logs/reports" class="btn btn-outline-info">
+                <i class="fas fa-chart-bar"></i> Relatórios
+            </a>
+            <a href="/logs/monitor" class="btn btn-outline-success">
+                <i class="fas fa-eye"></i> Monitor
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtro de Período -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Período</label>
+                            <select name="days" class="form-select" onchange="this.form.submit()">
+                                <option value="1" {{ selected_days == 1 ? 'selected' : '' }}>Último dia</option>
+                                <option value="7" {{ selected_days == 7 ? 'selected' : '' }}>Últimos 7 dias</option>
+                                <option value="30" {{ selected_days == 30 ? 'selected' : '' }}>Últimos 30 dias</option>
+                                <option value="90" {{ selected_days == 90 ? 'selected' : '' }}>Últimos 90 dias</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Gerais -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ statistics.total_logs|number_format }}</h4>
+                            <p class="mb-0">Total de Logs</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% set error_count = 0 %}
+                            {% for level in statistics.levels %}
+                                {% if level.level in ['ERROR', 'CRITICAL', 'EMERGENCY'] %}
+                                    {% set error_count = error_count + level.count %}
+                                {% endif %}
+                            {% endfor %}
+                            <h4 class="mb-0">{{ error_count|number_format }}</h4>
+                            <p class="mb-0">Erros</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% set warning_count = 0 %}
+                            {% for level in statistics.levels %}
+                                {% if level.level == 'WARNING' %}
+                                    {% set warning_count = level.count %}
+                                {% endif %}
+                            {% endfor %}
+                            <h4 class="mb-0">{{ warning_count|number_format }}</h4>
+                            <p class="mb-0">Avisos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% set info_count = 0 %}
+                            {% for level in statistics.levels %}
+                                {% if level.level in ['INFO', 'NOTICE'] %}
+                                    {% set info_count = info_count + level.count %}
+                                {% endif %}
+                            {% endfor %}
+                            <h4 class="mb-0">{{ info_count|number_format }}</h4>
+                            <p class="mb-0">Informativos</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribuição por Nível</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="levelChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribuição por Canal</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="channelChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atividade por Hora -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Atividade por Hora</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="hourlyChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anomalias Detectadas -->
+    {% if anomalies %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Anomalias Detectadas (Últimas 24h)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if anomalies.error_spikes %}
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-fire"></i> Picos de Erro</h6>
+                        <ul class="mb-0">
+                            {% for spike in anomalies.error_spikes %}
+                            <li>{{ spike.hour }}: {{ spike.error_count }} erros</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if anomalies.suspicious_ips %}
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-shield-alt"></i> IPs Suspeitos</h6>
+                        <ul class="mb-0">
+                            {% for ip in anomalies.suspicious_ips %}
+                            <li>{{ ip.ip_address }}: {{ ip.request_count }} requisições</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if anomalies.auth_failures %}
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-lock"></i> Falhas de Autenticação</h6>
+                        <ul class="mb-0">
+                            {% for failure in anomalies.auth_failures %}
+                            <li>{{ failure.ip_address }}: {{ failure.failure_count }} tentativas</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if anomalies.slow_queries %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-clock"></i> Queries Lentas</h6>
+                        <ul class="mb-0">
+                            {% for query in anomalies.slow_queries %}
+                            <li>{{ query.execution_time }}s: {{ query.message|slice(0, 100) }}...</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Top IPs e Erros -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Top IPs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>IP</th>
+                                    <th>Requisições</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ip in statistics.top_ips %}
+                                <tr>
+                                    <td>{{ ip.ip_address }}</td>
+                                    <td>{{ ip.count|number_format }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Erros Mais Frequentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Mensagem</th>
+                                    <th>Ocorrências</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for error in statistics.top_errors %}
+                                <tr>
+                                    <td>{{ error.message|slice(0, 50) }}...</td>
+                                    <td>{{ error.count|number_format }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de Níveis
+const levelCtx = document.getElementById('levelChart').getContext('2d');
+new Chart(levelCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for level in statistics.levels %}'{{ level.level }}'{{ not loop.last ? ',' : '' }}{% endfor %}],
+        datasets: [{
+            data: [{% for level in statistics.levels %}{{ level.count }}{{ not loop.last ? ',' : '' }}{% endfor %}],
+            backgroundColor: [
+                '#dc3545', '#fd7e14', '#ffc107', '#28a745', 
+                '#17a2b8', '#6f42c1', '#e83e8c', '#6c757d'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Gráfico de Canais
+const channelCtx = document.getElementById('channelChart').getContext('2d');
+new Chart(channelCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for channel in statistics.channels %}'{{ channel.channel }}'{{ not loop.last ? ',' : '' }}{% endfor %}],
+        datasets: [{
+            label: 'Logs',
+            data: [{% for channel in statistics.channels %}{{ channel.count }}{{ not loop.last ? ',' : '' }}{% endfor %}],
+            backgroundColor: '#007bff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Gráfico de Atividade por Hora
+const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+new Chart(hourlyCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for hour in statistics.hourly_activity %}'{{ hour.hour }}h'{{ not loop.last ? ',' : '' }}{% endfor %}],
+        datasets: [{
+            label: 'Atividade',
+            data: [{% for hour in statistics.hourly_activity %}{{ hour.count }}{{ not loop.last ? ',' : '' }}{% endfor %}],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -109,6 +109,37 @@ $router->get('/sobre', 'AboutController', 'index')
 
 $router->get('/api/version', 'AboutController', 'apiVersion');
 
+// Rotas de logs (apenas para admins)
+$router->get('/logs', 'LogController', 'index')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/list', 'LogController', 'list')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/{id}', 'LogController', 'show')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/reports', 'LogController', 'reports')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/logs/reports', 'LogController', 'reports')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/export', 'LogController', 'export')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/logs/cleanup', 'LogController', 'cleanup')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/api/data', 'LogController', 'apiData')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/monitor', 'LogController', 'monitor')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/logs/stream', 'LogController', 'streamLogs')
+    ->middleware(AuthMiddleware::class);
+
 // Rotas de relatórios
 $router->get('/relatorios', 'RelatorioController', 'index')
     ->middleware(AuthMiddleware::class);
