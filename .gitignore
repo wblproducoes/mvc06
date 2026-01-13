@@ -1,0 +1,52 @@
+# Dependências
+/vendor/
+/node_modules/
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.production
+
+# Logs
+/storage/logs/
+*.log
+
+# Cache
+/storage/cache/
+/storage/sessions/
+
+# Uploads
+/storage/uploads/
+/public/uploads/
+
+# Arquivos temporários
+*.tmp
+*.temp
+/tmp/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.phar
+composer.lock
+
+# NPM
+package-lock.json
+yarn.lock
+
+# Backup files
+*.bak
+*.backup
+
+# Database
+*.sqlite
+*.db
