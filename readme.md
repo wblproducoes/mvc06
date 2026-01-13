@@ -61,6 +61,11 @@ Edite o arquivo `.env` com suas configurações de banco de dados e email.
 php cli/migrate.php
 ```
 
+O script de migração irá:
+- Executar o schema SQL (`database/schema.sql`)
+- Inserir dados iniciais (`database/seeds.sql`)
+- Criar usuário administrador padrão
+
 5. **Inicie o servidor**
 ```bash
 php -S localhost:8000 -t public/
@@ -79,6 +84,9 @@ sistema-administrativo-mvc/
 │   ├── Middleware/        # Middleware de autenticação
 │   ├── Services/          # Serviços (Email, PDF, etc.)
 │   └── Config/            # Configurações
+├── database/              # Arquivos SQL
+│   ├── schema.sql         # Estrutura das tabelas
+│   └── seeds.sql          # Dados iniciais
 ├── public/                # Arquivos públicos
 │   ├── assets/           # CSS, JS, imagens
 │   └── index.php         # Ponto de entrada

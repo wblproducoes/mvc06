@@ -22,26 +22,77 @@ $router->post('/reset-password', 'AuthController', 'processResetPassword');
 $router->get('/dashboard', 'HomeController', 'index')
     ->middleware(AuthMiddleware::class);
 
-$router->get('/usuarios', 'UsuarioController', 'index')
+// Rotas de usuários
+$router->get('/usuarios', 'UserController', 'index')
     ->middleware(AuthMiddleware::class);
 
-$router->get('/usuarios/criar', 'UsuarioController', 'create')
+$router->get('/usuarios/criar', 'UserController', 'create')
     ->middleware(AuthMiddleware::class);
 
-$router->post('/usuarios/criar', 'UsuarioController', 'store')
+$router->post('/usuarios/criar', 'UserController', 'store')
     ->middleware(AuthMiddleware::class);
 
-$router->get('/usuarios/{id}', 'UsuarioController', 'show')
+$router->get('/usuarios/{id}', 'UserController', 'show')
     ->middleware(AuthMiddleware::class);
 
-$router->get('/usuarios/{id}/editar', 'UsuarioController', 'edit')
+$router->get('/usuarios/{id}/editar', 'UserController', 'edit')
     ->middleware(AuthMiddleware::class);
 
-$router->post('/usuarios/{id}/editar', 'UsuarioController', 'update')
+$router->post('/usuarios/{id}/editar', 'UserController', 'update')
     ->middleware(AuthMiddleware::class);
 
-$router->post('/usuarios/{id}/deletar', 'UsuarioController', 'delete')
+$router->post('/usuarios/{id}/deletar', 'UserController', 'delete')
     ->middleware(AuthMiddleware::class);
+
+// Rotas de matérias escolares
+$router->get('/materias', 'SchoolSubjectController', 'index')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/materias/criar', 'SchoolSubjectController', 'create')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/materias/criar', 'SchoolSubjectController', 'store')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/materias/{id}', 'SchoolSubjectController', 'show')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/materias/{id}/editar', 'SchoolSubjectController', 'edit')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/materias/{id}/editar', 'SchoolSubjectController', 'update')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/materias/{id}/deletar', 'SchoolSubjectController', 'delete')
+    ->middleware(AuthMiddleware::class);
+
+// Rotas de turmas escolares
+$router->get('/turmas', 'SchoolTeamController', 'index')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/turmas/criar', 'SchoolTeamController', 'create')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/turmas/criar', 'SchoolTeamController', 'store')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/turmas/{id}', 'SchoolTeamController', 'show')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/turmas/{id}/editar', 'SchoolTeamController', 'edit')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/turmas/{id}/editar', 'SchoolTeamController', 'update')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/turmas/{id}/link-publico', 'SchoolTeamController', 'togglePublicLink')
+    ->middleware(AuthMiddleware::class);
+
+$router->post('/turmas/{id}/deletar', 'SchoolTeamController', 'delete')
+    ->middleware(AuthMiddleware::class);
+
+// Rota pública para visualizar turma
+$router->get('/turma/{token}', 'SchoolTeamController', 'publicView');
 
 $router->get('/perfil', 'PerfilController', 'index')
     ->middleware(AuthMiddleware::class);

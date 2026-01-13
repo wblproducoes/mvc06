@@ -1,0 +1,160 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-book"></i>
+        Matérias Escolares
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/materias/criar" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Nova Matéria
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ filters.search }}" placeholder="Nome da matéria">
+            </div>
+            <div class="col-md-4">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">Todos os status</option>
+                    {% for status in statuses %}
+                    <option value="{{ status.id }}" {{ filters.status == status.id ? 'selected' : '' }}>
+                        {{ status.translate }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i>
+                        Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de matérias -->
+<div class="row">
+    {% if subjects %}
+        {% for subject in subjects %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title">{{ subject.translate }}</h5>
+                        <span class="badge bg-{{ subject.status_color }}">
+                            {{ subject.status_name }}
+                        </span>
+                    </div>
+                    
+                    <p class="card-text text-muted small">
+                        <strong>Nome:</strong> {{ subject.name }}
+                    </p>
+                    
+                    {% if subject.description %}
+                    <p class="card-text">{{ subject.description }}</p>
+                    {% endif %}
+                    
+                    <div class="text-muted small mb-3">
+                        <i class="bi bi-calendar"></i>
+                        Criado em {{ subject.dh|date('d/m/Y') }}
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <a href="/materias/{{ subject.id }}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-eye"></i>
+                            Ver
+                        </a>
+                        <a href="/materias/{{ subject.id }}/editar" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                            Editar
+                        </a>
+                        <form method="POST" action="/materias/{{ subject.id }}/deletar" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm btn-delete" 
+                                    data-message="Tem certeza que deseja excluir esta matéria?">
+                                <i class="bi bi-trash"></i>
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-book display-1 text-muted"></i>
+                <h4 class="text-muted">Nenhuma matéria encontrada</h4>
+                <p class="text-muted">Comece criando a primeira matéria escolar.</p>
+                <a href="/materias/criar" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Criar Primeira Matéria
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if subjects %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-graph-up"></i>
+                    Estatísticas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h4 class="text-primary">{{ subjects|length }}</h4>
+                            <small class="text-muted">Total de Matérias</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h4 class="text-success">
+                                {{ subjects|filter(s => s.status_id == 1)|length }}
+                            </h4>
+                            <small class="text-muted">Ativas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <h4 class="text-warning">
+                                {{ subjects|filter(s => s.status_id == 2)|length }}
+                            </h4>
+                            <small class="text-muted">Inativas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="text-info">0</h4>
+                        <small class="text-muted">Com Professores</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

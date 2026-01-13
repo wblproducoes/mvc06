@@ -1,0 +1,215 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-person"></i>
+        Detalhes do Usuário
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="/usuarios/{{ user.id }}/editar" class="btn btn-warning">
+                <i class="bi bi-pencil"></i>
+                Editar
+            </a>
+        </div>
+        <a href="/usuarios" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Voltar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        {% if user.photo %}
+                            <img src="{{ user.photo }}" alt="Foto" class="rounded-circle mb-3" width="120" height="120">
+                        {% else %}
+                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                 style="width: 120px; height: 120px;">
+                                <i class="bi bi-person text-white" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <span class="badge bg-{{ user.status_color }} fs-6">
+                            {{ user.status_name }}
+                        </span>
+                    </div>
+                    
+                    <div class="col-md-9">
+                        <h4>{{ user.name }}</h4>
+                        {% if user.alias %}
+                            <p class="text-muted">{{ user.alias }}</p>
+                        {% endif %}
+                        
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Username:</strong></td>
+                                <td><code>{{ user.username }}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPF:</strong></td>
+                                <td>{{ user.cpf ?? 'Não informado' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data de Nascimento:</strong></td>
+                                <td>
+                                    {% if user.birth_date %}
+                                        {{ user.birth_date|date('d/m/Y') }}
+                                    {% else %}
+                                        Não informado
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gênero:</strong></td>
+                                <td>{{ user.gender_name ?? 'Não informado' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nível de Acesso:</strong></td>
+                                <td>{{ user.level_name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if user.phone_home or user.phone_mobile or user.phone_message %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-telephone"></i>
+                    Contatos
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if user.phone_home %}
+                    <div class="col-md-4">
+                        <strong>Residencial:</strong><br>
+                        {{ user.phone_home }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.phone_mobile %}
+                    <div class="col-md-4">
+                        <strong>Celular:</strong><br>
+                        {{ user.phone_mobile }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.phone_message %}
+                    <div class="col-md-4">
+                        <strong>WhatsApp:</strong><br>
+                        <a href="https://wa.me/55{{ user.phone_message|replace({' ': '', '(': '', ')': '', '-': ''}) }}" 
+                           target="_blank" class="text-decoration-none">
+                            {{ user.phone_message }}
+                            <i class="bi bi-whatsapp text-success"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Informações do Sistema
+                </h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td><strong>Código Único:</strong></td>
+                        <td><code>{{ user.unique_code }}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cadastrado em:</strong></td>
+                        <td>{{ user.dh|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    {% if user.dh_update %}
+                    <tr>
+                        <td><strong>Atualizado em:</strong></td>
+                        <td>{{ user.dh_update|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td><strong>Último Acesso:</strong></td>
+                        <td>
+                            {% if user.last_access %}
+                                {{ user.last_access|date('d/m/Y H:i') }}
+                            {% else %}
+                                <span class="text-muted">Nunca</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-shield-check"></i>
+                    Ações
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/usuarios/{{ user.id }}/editar" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i>
+                        Editar Usuário
+                    </a>
+                    
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                        <i class="bi bi-key"></i>
+                        Redefinir Senha
+                    </button>
+                    
+                    <form method="POST" action="/usuarios/{{ user.id }}/deletar" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn btn-danger w-100 btn-delete" 
+                                data-message="Tem certeza que deseja excluir este usuário?">
+                            <i class="bi bi-trash"></i>
+                            Excluir Usuário
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para redefinir senha -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Redefinir Senha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja enviar um email para <strong>{{ user.email }}</strong> com instruções para redefinir a senha?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Enviar Email</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

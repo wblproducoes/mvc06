@@ -1,0 +1,176 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-people"></i>
+        Usuários
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/usuarios/criar" class="btn btn-primary">
+            <i class="bi bi-plus"></i>
+            Novo Usuário
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ filters.search }}" placeholder="Nome, email ou username">
+            </div>
+            <div class="col-md-3">
+                <label for="level" class="form-label">Nível</label>
+                <select class="form-select" id="level" name="level">
+                    <option value="">Todos os níveis</option>
+                    {% for level in levels %}
+                    <option value="{{ level.id }}" {{ filters.level == level.id ? 'selected' : '' }}>
+                        {{ level.translate }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">Todos os status</option>
+                    {% for status in statuses %}
+                    <option value="{{ status.id }}" {{ filters.status == status.id ? 'selected' : '' }}>
+                        {{ status.translate }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i>
+                        Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de usuários -->
+<div class="card">
+    <div class="card-body">
+        {% if users %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Nível</th>
+                        <th>Status</th>
+                        <th>Último Acesso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            {% if user.photo %}
+                                <img src="{{ user.photo }}" alt="Foto" class="rounded-circle" width="40" height="40">
+                            {% else %}
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 40px; height: 40px;">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ user.name }}</strong>
+                                {% if user.alias %}
+                                    <br><small class="text-muted">{{ user.alias }}</small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td><code>{{ user.username }}</code></td>
+                        <td>{{ user.level_name }}</td>
+                        <td>
+                            <span class="badge bg-{{ user.status_color }}">
+                                {{ user.status_name }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user.last_access %}
+                                {{ user.last_access|date('d/m/Y H:i') }}
+                            {% else %}
+                                <span class="text-muted">Nunca</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/usuarios/{{ user.id }}" class="btn btn-outline-info" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/usuarios/{{ user.id }}/editar" class="btn btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="/usuarios/{{ user.id }}/deletar" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-delete" 
+                                            title="Excluir" data-message="Tem certeza que deseja excluir este usuário?">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Paginação -->
+        {% if pagination.total > 1 %}
+        <nav aria-label="Paginação">
+            <ul class="pagination justify-content-center">
+                {% if pagination.current > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pagination.current - 1 }}">Anterior</a>
+                </li>
+                {% endif %}
+                
+                {% for page in 1..pagination.total %}
+                <li class="page-item {{ pagination.current == page ? 'active' : '' }}">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                </li>
+                {% endfor %}
+                
+                {% if pagination.current < pagination.total %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ pagination.current + 1 }}">Próximo</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-people display-1 text-muted"></i>
+            <h4 class="text-muted">Nenhum usuário encontrado</h4>
+            <p class="text-muted">Comece criando o primeiro usuário do sistema.</p>
+            <a href="/usuarios/criar" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Criar Primeiro Usuário
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

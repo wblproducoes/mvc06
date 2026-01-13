@@ -61,14 +61,14 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Total de Vendas
+                            Total de Turmas
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            R$ {{ total_vendas|number_format(2, ',', '.') }}
+                            {{ total_turmas|number_format }}
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        <i class="bi bi-collection fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -81,14 +81,14 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Vendas do Mês
+                            Matérias Cadastradas
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            R$ {{ vendas_mes|number_format(2, ',', '.') }}
+                            {{ total_materias|number_format }}
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="bi bi-calendar-month fa-2x text-gray-300"></i>
+                        <i class="bi bi-book fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -103,11 +103,11 @@
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
                     <i class="bi bi-graph-up"></i>
-                    Vendas dos Últimos 30 Dias
+                    Usuários por Nível de Acesso
                 </h6>
             </div>
             <div class="card-body">
-                <canvas id="vendasChart" width="100%" height="40"></canvas>
+                <canvas id="usuariosChart" width="100%" height="40"></canvas>
             </div>
         </div>
     </div>
@@ -121,29 +121,46 @@
                 </h6>
             </div>
             <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Novo usuário cadastrado</h6>
-                            <p class="mb-1 text-muted small">João Silva se registrou</p>
+                {% if atividade_recente %}
+                    <div class="list-group list-group-flush">
+                        {% for atividade in atividade_recente %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi {{ atividade.icon }} text-{{ atividade.color }} me-2"></i>
+                                <span>{{ atividade.message }}</span>
+                            </div>
+                            <small class="text-muted">{{ atividade.time_ago }}</small>
                         </div>
-                        <small class="text-muted">2h</small>
+                        {% endfor %}
                     </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Venda realizada</h6>
-                            <p class="mb-1 text-muted small">Produto XYZ - R$ 150,00</p>
+                {% else %}
+                    <p class="text-muted text-center">Nenhuma atividade recente</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-pie-chart"></i>
+                    Distribuição por Nível
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for nivel in usuarios_por_nivel %}
+                    {% if nivel.total > 0 %}
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="small">{{ nivel.nivel }}</span>
+                            <span class="small font-weight-bold">{{ nivel.total }}</span>
                         </div>
-                        <small class="text-muted">4h</small>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Relatório gerado</h6>
-                            <p class="mb-1 text-muted small">Relatório mensal de vendas</p>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" 
+                                 style="width: {{ (nivel.total / total_usuarios * 100)|round }}%"></div>
                         </div>
-                        <small class="text-muted">1d</small>
                     </div>
-                </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -153,25 +170,35 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Gráfico de vendas
-const ctx = document.getElementById('vendasChart').getContext('2d');
-const vendasChart = new Chart(ctx, {
-    type: 'line',
+// Gráfico de usuários por nível
+const ctx = document.getElementById('usuariosChart').getContext('2d');
+const usuariosChart = new Chart(ctx, {
+    type: 'doughnut',
     data: {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        labels: [
+            {% for nivel in usuarios_por_nivel %}
+                {% if nivel.total > 0 %}'{{ nivel.nivel }}'{{ not loop.last ? ',' : '' }}{% endif %}
+            {% endfor %}
+        ],
         datasets: [{
-            label: 'Vendas (R$)',
-            data: [12000, 19000, 15000, 25000, 22000, 30000],
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.1)',
-            tension: 0.1
+            data: [
+                {% for nivel in usuarios_por_nivel %}
+                    {% if nivel.total > 0 %}{{ nivel.total }}{{ not loop.last ? ',' : '' }}{% endif %}
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+                '#e74a3b', '#858796', '#5a5c69', '#6f42c1'
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
         }]
     },
     options: {
         responsive: true,
         plugins: {
             legend: {
-                position: 'top',
+                position: 'bottom',
             }
         }
     }

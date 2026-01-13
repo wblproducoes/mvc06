@@ -8,7 +8,7 @@
                 </a>
             </li>
             
-            {% if user.role == 'admin' or user.role == 'manager' %}
+            {% if user.level_id <= 6 %}
             <li class="nav-item">
                 <a class="nav-link" href="/usuarios">
                     <i class="bi bi-people"></i>
@@ -16,6 +16,20 @@
                 </a>
             </li>
             {% endif %}
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/materias">
+                    <i class="bi bi-book"></i>
+                    Matérias
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/turmas">
+                    <i class="bi bi-collection"></i>
+                    Turmas
+                </a>
+            </li>
             
             <li class="nav-item">
                 <a class="nav-link" href="/relatorios">
@@ -44,7 +58,7 @@
         </h6>
         
         <ul class="nav flex-column mb-2">
-            {% if user.role == 'admin' %}
+            {% if user.level_id <= 3 %}
             <li class="nav-item">
                 <a class="nav-link" href="/configuracoes">
                     <i class="bi bi-gear"></i>

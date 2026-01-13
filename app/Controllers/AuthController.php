@@ -8,12 +8,12 @@
 
 namespace App\Controllers;
 
-use App\Models\Usuario;
+use App\Models\User;
 use App\Services\EmailService;
 
 class AuthController extends BaseController
 {
-    private Usuario $usuarioModel;
+    private User $userModel;
     private EmailService $emailService;
     
     /**
@@ -22,7 +22,7 @@ class AuthController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->usuarioModel = new Usuario();
+        $this->userModel = new User();
         $this->emailService = new EmailService();
     }
     
@@ -65,29 +65,35 @@ class AuthController extends BaseController
             return;
         }
         
-        $usuario = $this->usuarioModel->findByEmail($email);
+        // Tenta login por email ou username
+        $usuario = $this->userModel->findByEmail($email);
+        if (!$usuario) {
+            $usuario = $this->userModel->findByUsername($email);
+        }
         
-        if (!$usuario || !password_verify($senha, $usuario['senha'])) {
+        if (!$usuario || !password_verify($senha, $usuario['password'])) {
             $this->addFlashMessage('error', 'Credenciais inválidas');
             $this->redirect('/login');
             return;
         }
         
-        if (!$usuario['ativo']) {
-            $this->addFlashMessage('error', 'Usuário inativo');
+        if ($usuario['status_id'] != 1) {
+            $this->addFlashMessage('error', 'Usuário inativo ou bloqueado');
             $this->redirect('/login');
             return;
         }
         
         // Atualiza último acesso
-        $this->usuarioModel->updateLastAccess($usuario['id']);
+        $this->userModel->updateLastAccess($usuario['id']);
         
         // Cria sessão
         $_SESSION['user'] = [
             'id' => $usuario['id'],
-            'nome' => $usuario['nome'],
+            'name' => $usuario['name'],
             'email' => $usuario['email'],
-            'role' => $usuario['role']
+            'username' => $usuario['username'],
+            'level_id' => $usuario['level_id'],
+            'photo' => $usuario['photo']
         ];
         
         $this->addFlashMessage('success', 'Login realizado com sucesso!');
@@ -138,16 +144,16 @@ class AuthController extends BaseController
             return;
         }
         
-        $usuario = $this->usuarioModel->findByEmail($email);
+        $usuario = $this->userModel->findByEmail($email);
         
         if ($usuario) {
             // Gera token de reset
             $token = bin2hex(random_bytes(32));
-            $this->usuarioModel->createPasswordResetToken($usuario['id'], $token);
+            $this->userModel->createPasswordResetToken($usuario['id'], $token);
             
             // Envia email
             $resetUrl = $_ENV['APP_URL'] . '/reset-password?token=' . $token;
-            $this->emailService->sendPasswordReset($email, $usuario['nome'], $resetUrl);
+            $this->emailService->sendPasswordReset($email, $usuario['name'], $resetUrl);
         }
         
         // Sempre mostra a mesma mensagem por segurança
@@ -164,7 +170,7 @@ class AuthController extends BaseController
     {
         $token = $_GET['token'] ?? '';
         
-        if (empty($token) || !$this->usuarioModel->isValidResetToken($token)) {
+        if (empty($token) || !$this->userModel->isValidResetToken($token)) {
             $this->addFlashMessage('error', 'Token inválido ou expirado');
             $this->redirect('/login');
             return;
@@ -211,14 +217,14 @@ class AuthController extends BaseController
             return;
         }
         
-        if (!$this->usuarioModel->isValidResetToken($token)) {
+        if (!$this->userModel->isValidResetToken($token)) {
             $this->addFlashMessage('error', 'Token inválido ou expirado');
             $this->redirect('/login');
             return;
         }
         
         // Atualiza senha
-        $this->usuarioModel->updatePasswordByToken($token, password_hash($senha, PASSWORD_BCRYPT));
+        $this->userModel->updatePasswordByToken($token, password_hash($senha, PASSWORD_BCRYPT));
         
         $this->addFlashMessage('success', 'Senha redefinida com sucesso!');
         $this->redirect('/login');

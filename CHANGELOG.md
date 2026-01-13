@@ -17,6 +17,52 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.1.0] - 2025-01-13
+
+### ✨ Adicionado
+- **Sistema Escolar Completo**
+  - Tabelas para gêneros, níveis de acesso e status
+  - Gestão de matérias escolares
+  - Períodos escolares (matutino, vespertino, noturno, integral)
+  - Turmas escolares com links públicos
+  - Horários escolares com grade de aulas
+  - Sistema de usuários expandido com CPF, telefones, foto
+
+- **Models Avançados**
+  - Model User com funcionalidades completas
+  - Models para Gender, Level, Status
+  - Models para SchoolSubject, SchoolPeriod, SchoolTeam
+  - Model SchoolSchedule com grade de horários
+  - Soft delete em todos os models
+  - Relacionamentos com foreign keys
+
+- **Dashboard Escolar**
+  - Estatísticas de usuários, turmas e matérias
+  - Gráfico de distribuição por níveis
+  - Atividade recente do sistema
+  - Cards informativos atualizados
+
+- **Funcionalidades de Segurança**
+  - Login por email ou username
+  - Códigos únicos para usuários
+  - Tokens para links públicos de turmas
+  - Controle de expiração de links
+
+### 🔧 Alterado
+- Migração do banco atualizada com schema completo
+- AuthController adaptado para novo modelo User
+- HomeController com estatísticas escolares
+- Dashboard redesenhado para ambiente escolar
+
+### 📦 Estrutura
+- Schema MySQL/MariaDB profissional
+- Índices otimizados para performance
+- Foreign keys para integridade referencial
+- Campos de auditoria (dh, dh_update, deleted_at)
+- Suporte a soft delete em todas as tabelas
+
+---
+
 ## [1.0.0] - 2025-01-13
 
 ### 🎉 Lançamento Inicial
