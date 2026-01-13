@@ -10,6 +10,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\EmailService;
+use App\Core\Security;
 
 class AuthController extends BaseController
 {
@@ -50,17 +51,35 @@ class AuthController extends BaseController
      */
     public function processLogin(): void
     {
+        // Rate limiting para login
+        if (!Security::rateLimit('login', 5, 900)) { // 5 tentativas por 15 min
+            Security::logSecurityEvent('login_rate_limit_exceeded');
+            $this->addFlashMessage('error', 'Muitas tentativas de login. Tente novamente em 15 minutos.');
+            $this->redirect('/login');
+            return;
+        }
+        
         if (!$this->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Security::logSecurityEvent('csrf_token_invalid', ['action' => 'login']);
             $this->addFlashMessage('error', 'Token CSRF inválido');
             $this->redirect('/login');
             return;
         }
         
-        $email = $_POST['email'] ?? '';
+        $email = Security::sanitizeInput($_POST['email'] ?? '', 'email');
         $senha = $_POST['senha'] ?? '';
         
         if (empty($email) || empty($senha)) {
             $this->addFlashMessage('error', 'Email e senha são obrigatórios');
+            $this->redirect('/login');
+            return;
+        }
+        
+        // Verifica tentativas de login por IP/email
+        $identifier = $email . '_' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        if (!Security::checkLoginAttempts($identifier)) {
+            Security::logSecurityEvent('login_blocked_attempts', ['email' => $email]);
+            $this->addFlashMessage('error', 'Conta temporariamente bloqueada devido a muitas tentativas de login');
             $this->redirect('/login');
             return;
         }
@@ -71,33 +90,52 @@ class AuthController extends BaseController
             $usuario = $this->userModel->findByUsername($email);
         }
         
-        if (!$usuario || !password_verify($senha, $usuario['password'])) {
+        $loginSuccess = false;
+        
+        if ($usuario && Security::verifyPassword($senha, $usuario['password'])) {
+            if ($usuario['status_id'] == 1) {
+                $loginSuccess = true;
+                
+                // Atualiza último acesso
+                $this->userModel->updateLastAccess($usuario['id']);
+                
+                // Regenera sessão por segurança
+                session_regenerate_id(true);
+                
+                // Cria sessão
+                $_SESSION['user'] = [
+                    'id' => $usuario['id'],
+                    'name' => $usuario['name'],
+                    'email' => $usuario['email'],
+                    'username' => $usuario['username'],
+                    'level_id' => $usuario['level_id'],
+                    'photo' => $usuario['photo'],
+                    'login_time' => time(),
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                ];
+                
+                Security::logSecurityEvent('login_success', [
+                    'user_id' => $usuario['id'],
+                    'email' => $usuario['email']
+                ]);
+                
+                $this->addFlashMessage('success', 'Login realizado com sucesso!');
+                $this->redirect('/');
+            } else {
+                Security::logSecurityEvent('login_inactive_user', ['email' => $email]);
+                $this->addFlashMessage('error', 'Usuário inativo ou bloqueado');
+            }
+        } else {
+            Security::logSecurityEvent('login_failed', ['email' => $email]);
             $this->addFlashMessage('error', 'Credenciais inválidas');
-            $this->redirect('/login');
-            return;
         }
         
-        if ($usuario['status_id'] != 1) {
-            $this->addFlashMessage('error', 'Usuário inativo ou bloqueado');
+        // Registra tentativa de login
+        Security::recordLoginAttempt($identifier, $loginSuccess);
+        
+        if (!$loginSuccess) {
             $this->redirect('/login');
-            return;
         }
-        
-        // Atualiza último acesso
-        $this->userModel->updateLastAccess($usuario['id']);
-        
-        // Cria sessão
-        $_SESSION['user'] = [
-            'id' => $usuario['id'],
-            'name' => $usuario['name'],
-            'email' => $usuario['email'],
-            'username' => $usuario['username'],
-            'level_id' => $usuario['level_id'],
-            'photo' => $usuario['photo']
-        ];
-        
-        $this->addFlashMessage('success', 'Login realizado com sucesso!');
-        $this->redirect('/');
     }
     
     /**
@@ -107,6 +145,23 @@ class AuthController extends BaseController
      */
     public function logout(): void
     {
+        if (isset($_SESSION['user'])) {
+            Security::logSecurityEvent('logout', [
+                'user_id' => $_SESSION['user']['id']
+            ]);
+        }
+        
+        // Destrói sessão completamente
+        $_SESSION = [];
+        
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
         session_destroy();
         $this->redirect('/login');
     }

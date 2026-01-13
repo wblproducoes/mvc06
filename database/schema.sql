@@ -198,6 +198,28 @@ CREATE TABLE IF NOT EXISTS `{prefix}system_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+-- Tabela de Auditoria
+CREATE TABLE IF NOT EXISTS `{prefix}audit_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `action` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `table_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `record_id` int(11) DEFAULT NULL,
+  `old_data` json DEFAULT NULL,
+  `new_data` json DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_audit_logs_user` (`user_id`),
+  KEY `idx_audit_logs_action` (`action`),
+  KEY `idx_audit_logs_table` (`table_name`),
+  KEY `idx_audit_logs_record` (`record_id`),
+  KEY `idx_audit_logs_created` (`created_at`),
+  CONSTRAINT `fk_audit_logs_user` FOREIGN KEY (`user_id`) REFERENCES `{prefix}users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 -- FOREIGN KEYS
 -- --------------------------------------------------------
 

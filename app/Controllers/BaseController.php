@@ -11,6 +11,7 @@ namespace App\Controllers;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Core\Database;
+use App\Core\Security;
 
 abstract class BaseController
 {
@@ -24,6 +25,7 @@ abstract class BaseController
     {
         $this->initializeTwig();
         $this->database = new Database();
+        $this->validateSession();
     }
     
     /**
@@ -90,14 +92,57 @@ abstract class BaseController
     }
     
     /**
+     * Valida sessão ativa
+     * 
+     * @return void
+     */
+    private function validateSession(): void
+    {
+        if (isset($_SESSION['user'])) {
+            // Verifica timeout da sessão
+            $loginTime = $_SESSION['user']['login_time'] ?? 0;
+            if (time() - $loginTime > 3600) { // 1 hora
+                Security::logSecurityEvent('session_timeout', [
+                    'user_id' => $_SESSION['user']['id']
+                ]);
+                session_destroy();
+                $this->redirect('/login');
+                return;
+            }
+            
+            // Verifica se IP mudou (possível session hijacking)
+            $currentIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            $sessionIp = $_SESSION['user']['ip'] ?? '';
+            
+            if ($sessionIp !== $currentIp) {
+                Security::logSecurityEvent('session_hijack_attempt', [
+                    'user_id' => $_SESSION['user']['id'],
+                    'session_ip' => $sessionIp,
+                    'current_ip' => $currentIp
+                ]);
+                session_destroy();
+                $this->redirect('/login');
+                return;
+            }
+            
+            // Atualiza timestamp da sessão
+            $_SESSION['user']['last_activity'] = time();
+        }
+    }
+    
+    /**
      * Gera token CSRF
      * 
      * @return string
      */
     protected function generateCsrfToken(): string
     {
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        if (!isset($_SESSION['csrf_token']) || 
+            !isset($_SESSION['csrf_token_time']) || 
+            time() - $_SESSION['csrf_token_time'] > 3600) {
+            
+            $_SESSION['csrf_token'] = Security::generateSecureToken(32);
+            $_SESSION['csrf_token_time'] = time();
         }
         return $_SESSION['csrf_token'];
     }
@@ -110,7 +155,16 @@ abstract class BaseController
      */
     protected function verifyCsrfToken(string $token): bool
     {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+        if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time'])) {
+            return false;
+        }
+        
+        // Verifica se token não expirou (1 hora)
+        if (time() - $_SESSION['csrf_token_time'] > 3600) {
+            return false;
+        }
+        
+        return hash_equals($_SESSION['csrf_token'], $token);
     }
     
     /**

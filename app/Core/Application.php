@@ -10,8 +10,10 @@ namespace App\Core;
 
 use App\Core\Router;
 use App\Core\Database;
+use App\Core\Security;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CsrfMiddleware;
+use App\Middleware\SecurityMiddleware;
 
 class Application
 {
@@ -23,6 +25,9 @@ class Application
      */
     public function __construct()
     {
+        // Inicializa segurança
+        Security::initialize();
+        
         $this->database = new Database();
     }
     
@@ -50,6 +55,10 @@ class Application
      */
     private function applyGlobalMiddleware(): void
     {
+        // Middleware de segurança global
+        $securityMiddleware = new SecurityMiddleware();
+        $securityMiddleware->handle();
+        
         // Middleware CSRF para rotas POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $csrfMiddleware = new CsrfMiddleware();

@@ -17,6 +17,78 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.2.0] - 2025-01-13
+
+### 🔒 Segurança Avançada - Nível Empresarial
+
+#### ✨ Adicionado
+- **Classe Security Central**
+  - Gerenciamento centralizado de segurança
+  - Headers de segurança automáticos (CSP, HSTS, XSS Protection)
+  - Criptografia AES-256-CBC para dados sensíveis
+  - Rate limiting configurável por ação
+  - Detecção de SQL Injection e XSS
+  - Validação e sanitização avançada de inputs
+
+- **Sistema de Auditoria Completo**
+  - Log de todas as ações do sistema
+  - Rastreamento de mudanças em dados
+  - Logs de segurança detalhados
+  - Retenção configurável de logs
+  - Sanitização automática de dados sensíveis
+
+- **Autenticação Fortificada**
+  - Bloqueio por tentativas de login (5 tentativas/15min)
+  - Detecção de session hijacking por IP
+  - Regeneração automática de sessão
+  - Timeout de sessão configurável
+  - Tokens CSRF com expiração
+
+- **Middleware de Segurança**
+  - Verificação de IP whitelist/blacklist
+  - Detecção de User-Agents suspeitos
+  - Controle de tamanho de requisições
+  - Rate limiting por IP e ação
+  - Bloqueio automático de ameaças
+
+- **Monitoramento e Alertas**
+  - Script de verificação de segurança
+  - Logs estruturados de eventos
+  - Detecção de atividades suspeitas
+  - Score de segurança do sistema
+
+#### 🔧 Melhorias de Segurança
+- **Senhas**: Hash Argon2ID com configurações otimizadas
+- **Sessões**: Configuração segura com HttpOnly, Secure, SameSite
+- **Headers**: Content Security Policy, HSTS, X-Frame-Options
+- **Validação**: Sanitização automática de todos os inputs
+- **Criptografia**: Chaves rotacionáveis e algoritmos modernos
+
+#### 📊 Auditoria e Compliance
+- Tabela de auditoria com foreign keys
+- Log de todas as operações CRUD
+- Rastreamento de mudanças de dados
+- Logs de eventos de segurança
+- Retenção configurável de logs
+
+#### 🛡️ Proteções Implementadas
+- **SQL Injection**: Detecção por padrões + Prepared Statements
+- **XSS**: Detecção + Escape automático no Twig
+- **CSRF**: Tokens seguros com expiração
+- **Session Hijacking**: Verificação de IP e User-Agent
+- **Brute Force**: Rate limiting + Bloqueio temporário
+- **Clickjacking**: X-Frame-Options DENY
+- **MIME Sniffing**: X-Content-Type-Options nosniff
+
+#### 🔍 Monitoramento
+- Logs de segurança estruturados
+- Detecção de padrões suspeitos
+- Alertas automáticos de segurança
+- Score de segurança em tempo real
+- Auditoria de configurações
+
+---
+
 ## [1.1.0] - 2025-01-13
 
 ### ✨ Adicionado
