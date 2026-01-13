@@ -1,8 +1,11 @@
 {
     "name": "sistema/administrativo-mvc",
     "description": "Sistema administrativo completo em PHP com arquitetura MVC",
+    "version": "1.0.0",
     "type": "project",
     "license": "MIT",
+    "keywords": ["php", "mvc", "admin", "bootstrap", "twig"],
+    "homepage": "https://github.com/wblproducoes/mvc06",
     "require": {
         "php": "^8.4",
         "twig/twig": "^3.0",

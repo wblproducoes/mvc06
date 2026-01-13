@@ -1,0 +1,12 @@
+{# Informações de versão para o footer #}
+<div class="version-info text-muted small">
+    <div class="d-flex justify-content-between align-items-center">
+        <span>
+            {{ app_name }} 
+            <span class="badge bg-primary">v{{ app_version }}</span>
+        </span>
+        <span>
+            Build {{ app_version_full|split('+')|last }}
+        </span>
+    </div>
+</div>

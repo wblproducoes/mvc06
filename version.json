@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "build": "20250113001",
+    "release_date": "2025-01-13",
+    "codename": "Genesis",
+    "php_min": "8.4.0",
+    "stability": "stable",
+    "changelog_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/blob/main/CHANGELOG.md",
+    "download_url": "https://github.com/seu-usuario/sistema-administrativo-mvc/releases/tag/v1.0.0"
+}

@@ -43,7 +43,6 @@ $router->post('/usuarios/{id}/editar', 'UsuarioController', 'update')
 $router->post('/usuarios/{id}/deletar', 'UsuarioController', 'delete')
     ->middleware(AuthMiddleware::class);
 
-// Rotas de perfil
 $router->get('/perfil', 'PerfilController', 'index')
     ->middleware(AuthMiddleware::class);
 
@@ -52,6 +51,12 @@ $router->post('/perfil', 'PerfilController', 'update')
 
 $router->post('/perfil/senha', 'PerfilController', 'updatePassword')
     ->middleware(AuthMiddleware::class);
+
+// Rotas sobre/versão
+$router->get('/sobre', 'AboutController', 'index')
+    ->middleware(AuthMiddleware::class);
+
+$router->get('/api/version', 'AboutController', 'apiVersion');
 
 // Rotas de relatórios
 $router->get('/relatorios', 'RelatorioController', 'index')

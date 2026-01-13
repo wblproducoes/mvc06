@@ -172,7 +172,50 @@ php cli/migrate.php
 
 # Criar usuário admin
 php cli/create-admin.php
+
+# Gerenciar versões
+php cli/version.php show              # Mostra versão atual
+php cli/version.php bump patch        # Incrementa versão (patch/minor/major)
+php cli/version.php set 1.2.3         # Define versão específica
+php cli/version.php changelog         # Gera entrada no changelog
+
+# Release automatizado
+php cli/release.php patch             # Release patch
+php cli/release.php minor             # Release minor
+php cli/release.php major             # Release major
 ```
+
+## 📋 Versionamento
+
+O projeto segue o [Semantic Versioning](https://semver.org/lang/pt-BR/):
+
+- **MAJOR**: Mudanças incompatíveis na API
+- **MINOR**: Funcionalidades adicionadas de forma compatível
+- **PATCH**: Correções de bugs compatíveis
+
+### Gerenciamento de Versões
+
+- **Arquivo `version.json`**: Contém metadados da versão atual
+- **CHANGELOG.md**: Documenta todas as mudanças por versão
+- **Scripts CLI**: Automatizam incremento de versão e releases
+- **Integração Git**: Criação automática de tags e commits
+
+### Workflow de Release
+
+1. Desenvolva e teste suas mudanças
+2. Execute `php cli/release.php <tipo>` (patch/minor/major)
+3. O script irá:
+   - Incrementar a versão
+   - Atualizar arquivos de configuração
+   - Gerar entrada no changelog
+   - Criar commit e tag Git
+   - Opcionalmente fazer push
+
+### Informações de Versão na Interface
+
+- Footer com versão e build
+- Página "Sobre" com detalhes completos
+- API endpoint `/api/version` para integração
 
 ## 📝 Licença
 

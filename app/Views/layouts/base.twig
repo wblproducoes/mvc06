@@ -26,6 +26,10 @@
                     {% include 'partials/flash-messages.twig' %}
                     
                     {% block content %}{% endblock %}
+                    
+                    <footer class="mt-5 pt-3 border-top">
+                        {% include 'partials/version-info.twig' %}
+                    </footer>
                 </main>
             </div>
         </div>

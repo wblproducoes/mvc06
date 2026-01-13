@@ -46,6 +46,8 @@ abstract class BaseController
         $this->twig->addGlobal('csrf_token', $this->generateCsrfToken());
         $this->twig->addGlobal('user', $this->getCurrentUser());
         $this->twig->addGlobal('flash_messages', $this->getFlashMessages());
+        $this->twig->addGlobal('app_version', \App\Core\Version::get());
+        $this->twig->addGlobal('app_version_full', \App\Core\Version::getFull());
     }
     
     /**
